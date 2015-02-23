@@ -24,13 +24,35 @@ The ResourceGenerator provider takes in 4 arguments:
   }
 ```
   
-
-A call to Resource Generator has the same 2 first arguments as $resource:
+To simply create a standard $resource just call ResourceGenerator with only the first 2 parameters:
 ```javascript
 //creates a Cars resource and binds the "id" query field to the object's id
 var Cars = ResourceGenerator('cars/:id/', {'id':'@id'});
 ```
 As you can expect, a $resource is returned pointing to the cars endpoint and matches the id url query field with the object's id.
+
+Children endpoints are automatically added to the instance of the parent's resource. Like so:
+```javascript
+var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
+  {
+    'name': 'owners',
+    'url': 'owners/:id/',
+    'params': {'id':'@id'},
+    'link': {'car_id', 'id'}
+  }
+]);
+
+//now when we get an instance of Car we also get some helper variables:
+var prius = Cars.get({'id':1});
+var priusOwners;
+
+//we wait for the car to be fetched
+prius.$promise.then(function(){
+  //$owners automatically get added to prius with their "car_id" query param set to the prius' id.
+  priusOwners = prius.$owners.query();
+});
+```
+
 
 ### Methods
 Methods allow the manipulation of resource instantiated with your resource-generator. Example:
@@ -74,6 +96,27 @@ prius.toggleIgnition();
 //and turn it back off, using the non-instantiated Cars
 Cars.toggleIgnition(prius);
 ```
+
+### Other Helper Stuff
+
+#### Resolved Parameters
+You can pass either a parameters object to ResourceGenerator _or_ a function that returns one _or_ a function that returns a promise to return one. Furthermore, the function uses angular's dependency injection so you can do something link:
+```javascript
+//modifying the default params in this case, but this works for any time you pass in a parameters list
+//In this example, I want to attach a user's login role to all calls made from my resources, and if no role exists, fetch one.
+ResourceGeneratorProvider.defaults.params = function(RolesService){
+  if(RolesService.myRole){
+    return {'user_role': RolesService.myRole};
+  }
+  else{
+    return RolesService.getRole().then(function(role){
+      return {'user_role': RolesService.myRole}
+    }
+  }
+}
+```
+Do note however that this function will be called every single time a request goes out. It's best to cache results and reuse them and not make a new request each time unless necessary.
+
 
   
     

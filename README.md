@@ -117,6 +117,26 @@ ResourceGeneratorProvider.defaults.params = function(RolesService){
 ```
 Do note however that this function will be called every single time a request goes out. It's best to cache results and reuse them and not make a new request each time unless necessary.
 
+#### GetWithChildren()
+GetWithChildren() is a default method for all ResourceGenerators. It will parallel load all of the resource's childrens and save their result to the resource. Like so:
+```javascript
+var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
+  {
+    'name': 'owners',
+    'url': 'owners/:id/',
+    'params': {'id':'@id'},
+    'link': {'car_id', 'id'}
+  }
+]);
+
+var prius = Cars.getWithChildren({'id':5});
+var priusOwners;
+
+prius.$promise.then(function(){
+  priusOwners = prius._owners
+});
+```
+
 
   
     

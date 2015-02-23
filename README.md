@@ -28,6 +28,24 @@ var camaro = new Cars();
 camaro.paint('yellow');
 ```
 
+### Configuration
+The ResourceGenerator provider takes in 4 arguments:
+- `url`: the URL to get this resource from.
+- `paramDefaults`: the hash of parameter defaults for this resource, exactly like $resource. Will also take a function that returns an object.
+- `children`: child endpoints. Configured like so:
+```javascript
+  {
+    //A name for your child endpoint.
+    'name': 'owners', 
+    //URL for this endpoint.
+    'url': 'carowners/{id}', 
+    //Exactly like the parent, will take an object or a function that returns an object.
+    'params': {'id':'@id'}, 
+    //Object that has as a key a query field on this child and as a value a variable name to fetch from its parent.
+    'link': {'car_id', 'id'} 
+  }
+```
+
 ## Usage
 To simply create a standard $resource just call ResourceGenerator with only the first 2 parameters:
 ```javascript
@@ -56,23 +74,6 @@ prius.$promise.then(function(){
   //$owners automatically get added to prius with their "car_id" query param set to the prius' id.
   priusOwners = prius.$owners.query();
 });
-```
-### Configuration
-The ResourceGenerator provider takes in 4 arguments:
-- `url`: the URL to get this resource from.
-- `paramDefaults`: the hash of parameter defaults for this resource, exactly like $resource. Will also take a function that returns an object.
-- `children`: child endpoints. Configured like so:
-```javascript
-  {
-    //A name for your child endpoint.
-    'name': 'owners', 
-    //URL for this endpoint.
-    'url': 'carowners/{id}', 
-    //Exactly like the parent, will take an object or a function that returns an object.
-    'params': {'id':'@id'}, 
-    //Object that has as a key a query field on this child and as a value a variable name to fetch from its parent.
-    'link': {'car_id', 'id'} 
-  }
 ```
 
 ### Methods

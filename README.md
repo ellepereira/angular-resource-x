@@ -90,7 +90,7 @@ prius.paint('blue');
 ```
 
 ### Statics
-Statics (static methods) however, work in the non-stantiated ResourceGenerator, like so:
+Statics (static methods) however, work in the non-instantiated ResourceGenerator, like so:
 ```javascript
 var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}).static('getAllRedCars', function(){
   return this.query({color:'red'});

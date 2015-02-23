@@ -6,6 +6,28 @@ Resource Generator wraps a call to $resource and provides some extra functionali
 
 While $resource is amazing in itself, we wanted to provide a more declarative approach to $resource management. Typically if you wanted more functions out of your resources, you'd have to create a service that instantiated a resource and then managed the resource with methods on that service. Resource Generator creates one stop call for both your $resource and its management.
 
+Here's how your resource definition might look like:
+```javascript
+var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
+  {
+    'name': 'owners',
+    'url': 'owners/:id/',
+    'params': {'id':'@id'},
+    'link': {'car_id', 'id'}
+  }
+])
+  .method('paint', function(color){
+    this.color = color;
+    return this.$save();
+  }
+  .method('turnOn', function(){
+    this.on = true;
+  });
+  
+var camaro = new Cars();
+camaro.paint('yellow');
+```
+
 ## Usage
 To simply create a standard $resource just call ResourceGenerator with only the first 2 parameters:
 ```javascript

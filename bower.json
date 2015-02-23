@@ -1,0 +1,32 @@
+{
+  "name": "resource-generator",
+  "version": "0.1.0",
+  "homepage": "https://github.com/luciano7/resource-generator",
+  "authors": [
+    "Luciano Pereira <hello+world@luciano.io>",
+    "Dayan Moreno"
+  ],
+  "description": "Angular Resource Generator",
+  "main": "src/resourceGenerator.js",
+  "keywords": [
+    "angular",
+    "angularjs",
+    "ng-resource",
+    "resource"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.3.13",
+    "angular-mocks": "~1.3.13"
+  },
+  "dependencies": {
+    "angular-resource": "~1.3.13"
+  }
+}

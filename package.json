@@ -1,0 +1,13 @@
+{
+  "name": "resourceGenerator",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "karma-coverage": "^0.2.6",
+    "karma-jasmine": "^0.2.3",
+    "karma-phantomjs-launcher": "^0.1.4"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}

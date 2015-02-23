@@ -1,13 +1,13 @@
 'use strict';
 
-angular.module('resourceGenerator')
+angular.module('resourceGenerator', ['ngResource'])
 
 /**
  * ResourceGenerator provider:
  *  configuration:
  *    - APIURL (string): URL to the API root
  */
-  .provider('ResourceGenerator', function ResourceGenerator($injector) {
+  .provider('ResourceGenerator', function ResourceGenerator() {
 
     var _this = this;
 
@@ -25,9 +25,6 @@ angular.module('resourceGenerator')
       _this.url = url;
     };
 
-    function resolveParameters (params){
-      return angular.extend({},(typeof params === 'function') ? $injector.invoke(params) : params);
-    }
 
     function getWithChildren(getParams, children){
 
@@ -60,8 +57,7 @@ angular.module('resourceGenerator')
       return ret;
     }
 
-
-    this.$get = function($resource, Roles, $q){
+    this.$get = function($resource, $q, $injector){
 
       /**
        * ResourceGenerator Factory: Creates a resource definition with a few add-on methods to expand on $resource functionality.
@@ -76,8 +72,13 @@ angular.module('resourceGenerator')
        */
       return function(endpoint, params, subendpoints) {
 
+
         var ready = $q.defer();
         var api = _this.APIURL;
+
+        function resolveParameters (params){
+          return angular.extend({},(typeof params === 'function') ? $injector.invoke(params) : params);
+        }
 
         function subResourceGenerator(endpoint, parent) {
 

@@ -3,16 +3,14 @@
 angular.module('resourceGenerator', ['ngResource'])
 
 /**
- * ResourceGenerator provider:
- *  configuration:
- *    - APIURL (string): URL to the API root
+ * ResourceGenerator provider
  */
   .provider('ResourceGenerator', function ResourceGenerator() {
 
     var _this = this;
 
     _this.defaults = {
-      'url' : null,
+      'baseUrl' : null,
       'extensions': null,
       'statics': null,
       'params': {},
@@ -21,15 +19,10 @@ angular.module('resourceGenerator', ['ngResource'])
       }
     };
 
-    _this.setURL = function (url){
-      _this.url = url;
-    };
-
-
     function getWithChildren(getParams, children){
 
       var ret = new this({'$promise':null, '$resolved':false});
-      children = children || this.$$children;
+      children = children || this.$$config.children;
 
       ret.$promise = this.get(getParams).$promise.then(function(result){
 
@@ -72,12 +65,19 @@ angular.module('resourceGenerator', ['ngResource'])
        */
       return function(endpoint, params, subendpoints) {
 
-
         var ready = $q.defer();
-        var api = _this.APIURL;
+        var api = _this.defaults.baseUrl || '';
 
-        function resolveParameters (params){
-          return angular.extend({},(typeof params === 'function') ? $injector.invoke(params) : params);
+        function resolveParameters () {
+
+          var funcParams = [].slice.call(arguments);
+          var params = {};
+
+          angular.forEach(funcParams, function (funcParam) {
+            return angular.extend(params, (typeof funcParam === 'function') ? $injector.invoke(funcParam) : funcParam);
+          });
+
+          return params;
         }
 
         function subResourceGenerator(endpoint, parent) {
@@ -91,7 +91,7 @@ angular.module('resourceGenerator', ['ngResource'])
 
           angular.extend(params, connectingQuery);
 
-          return $resource(api + endpoint.endpoint, params, {
+          return $resource(api + endpoint.url, params, {
             'update': {
               'method': 'PATCH'
             }
@@ -112,7 +112,7 @@ angular.module('resourceGenerator', ['ngResource'])
               for(var i = 0; i < response.length; i++){
 
                 angular.forEach(subendpoints, function (endpoint){
-                  var subEndpointName = (endpoint.name ? endpoint.name : endpoint.endpoint.replace('/', ''));
+                  var subEndpointName = (endpoint.name ? endpoint.name : endpoint.url.replace('/', ''));
                   response[i]['$'+subEndpointName] = subResourceGenerator(endpoint, response[i]);
                 });
 
@@ -121,7 +121,7 @@ angular.module('resourceGenerator', ['ngResource'])
 
             else{
               angular.forEach(subendpoints, function (endpoint){
-                var subEndpointName = (endpoint.name ? endpoint.name : endpoint.endpoint.replace('/', ''));
+                var subEndpointName = (endpoint.name ? endpoint.name : endpoint.url.replace('/', ''));
                 response['$'+subEndpointName] = subResourceGenerator(endpoint, response);
               });
             }
@@ -148,7 +148,7 @@ angular.module('resourceGenerator', ['ngResource'])
         }
 
         //combine default parameters with what the user passes in
-        var parameters = angular.extend({}, resolveParameters(_this.defaults.params), params);
+        var parameters = resolveParameters(_this.defaults.params||{}, params);
 
         /**
          * Creates a $resource wrapped with extra functionality
@@ -181,7 +181,6 @@ angular.module('resourceGenerator', ['ngResource'])
             'method': 'OPTIONS'
           }
         });
-
 
         resource.$$config = {
           'url': endpoint,

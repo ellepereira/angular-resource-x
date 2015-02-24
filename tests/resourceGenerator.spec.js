@@ -45,34 +45,6 @@ describe('ResourceGenerator', function () {
       "fuelMax": 10
     }];
 
-  var carOwners = [
-    {
-      "id": 1,
-      "name": "Albert",
-      "car": 4,
-      "license": 1234
-    },
-    {
-      "id": 2,
-      "name": "John",
-      "car": 2,
-      "license": 2341
-    },
-    {
-      "id": 3,
-      "name": "Cindy",
-      "car": 3,
-      "license": 4321
-    },
-    {
-      "id": 4,
-      "name": "Luke",
-      "car": 1,
-      "license": 3241
-    }
-
-  ];
-
   beforeEach(module('resourceGenerator', function($provide, $injector, ResourceGeneratorProvider){
 
     $provide.value('Roles', mockRole);
@@ -85,12 +57,16 @@ describe('ResourceGenerator', function () {
   // instantiate service
   var Cars,
     ResourceGenerator,
-    $httpBackend;
+    $httpBackend,
+    $rootScope,
+    $q;
 
-  beforeEach(inject(function (_$httpBackend_, _ResourceGenerator_) {
+  beforeEach(inject(function (_$httpBackend_, _ResourceGenerator_, _$q_, _$rootScope_) {
 
     $httpBackend = _$httpBackend_;
     ResourceGenerator = _ResourceGenerator_;
+    $q = _$q_;
+    $rootScope = _$rootScope_;
 
     $httpBackend.whenGET(/cars\/[0-9]/).respond(mockCars[1]);
     $httpBackend.whenGET(/cars/).respond(mockCars);
@@ -104,6 +80,10 @@ describe('ResourceGenerator', function () {
       }
     ]);
 
+  }));
+
+  afterEach(inject(function($rootScope){
+    $rootScope.$apply();
   }));
 
   it('should initialize correctly', function () {
@@ -267,5 +247,21 @@ describe('ResourceGenerator', function () {
     $httpBackend.expectGET(/user_role=test-role/);
     $httpBackend.flush();
   });
+
+  it('Can pass a function for params', function(){
+
+    var params = function funcParams(){
+      return {'id':'@id'};
+    };
+
+    Cars = ResourceGenerator('cars/:id/', params);
+    var cars = Cars.query();
+    $httpBackend.flush();
+    cars[0].name = 'new prius';
+    $httpBackend.expectPATCH(/cars\/1/).respond(200);
+    cars[0].$update();
+    $httpBackend.flush();
+
+  })
 
 });

@@ -1,4 +1,4 @@
-# resource-generator
+# Angular ResourceGenerator
 AngularJS Resource Extension
 
 ## About
@@ -121,23 +121,17 @@ Cars.toggleIgnition(prius);
 
 ### Other Helper Stuff
 
-#### Resolved Parameters
-You can pass either a parameters object to ResourceGenerator _or_ a function that returns one _or_ a function that returns a promise to return one. Furthermore, the function uses angular's dependency injection so you can do something link:
+#### Function Params
+You can use a function in place of default params that returns the params. This function is $injected but only when called, so it's safe to set up during the config phase of your app. Like so:
 ```javascript
 //modifying the default params in this case, but this works for any time you pass in a parameters list
-//In this example, I want to attach a user's login role to all calls made from my resources, and if no role exists, fetch one.
+//In this example, I want to attach a user's login role to all calls made from my resources.
 ResourceGeneratorProvider.defaults.params = function(RolesService){
   if(RolesService.myRole){
     return {'user_role': RolesService.myRole};
   }
-  else{
-    return RolesService.getRole().then(function(role){
-      return {'user_role': RolesService.myRole}
-    }
-  }
 }
 ```
-Do note however that this function will be called every single time a request goes out. It's best to cache results and reuse them and not make a new request each time unless necessary.
 
 #### GetWithChildren()
 GetWithChildren() is a default method for all ResourceGenerators. It will parallel load all of the resource's childrens and save their result to the resource. Like so:

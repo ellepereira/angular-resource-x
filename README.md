@@ -155,7 +155,7 @@ var prius = Cars.getWithChildren({'id':5});
 var priusOwners;
 
 prius.$promise.then(function(){
-  priusOwners = prius._owners
+  priusOwners = prius._owners;
 });
 ```
 

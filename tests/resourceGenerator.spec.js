@@ -218,6 +218,7 @@ describe('ResourceGenerator', function () {
 
     var instanceCar = new Cars({'id':1});
 
+    $httpBackend.expect('OPTIONS', /cars/).respond(200);
     Cars.options();
 
     expect(Cars.test).toBeUndefined();

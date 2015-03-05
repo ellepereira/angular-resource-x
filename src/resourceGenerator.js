@@ -165,18 +165,18 @@
 
           resource.method = function method(arg1, func){
             extender(resource.prototype, arg1, func);
-            return this;
+            return resource;
           };
 
           resource.static = function method(arg1, func){
             extender(resource, arg1, func);
-            return this;
+            return resource;
           };
 
           resource.extend = function extend(arg1, func){
             resource.method(arg1, func);
             resource.static(arg1, func);
-            return this;
+            return resource;
           };
 
           angular.forEach(_this.defaults.extensions, function(func, key){

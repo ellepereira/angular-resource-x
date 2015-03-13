@@ -58,7 +58,7 @@
         function subResourceGenerator(endpoint, parent) {
 
           var connectingQuery = {};
-          var params = resolveParameters(endpoint.params);
+          var params = resolveParameters(endpoint.params, _this.defaults.params || {});
 
           angular.forEach(endpoint.link, function (value, key) {
             connectingQuery[key] = parent[value];
@@ -68,7 +68,24 @@
 
           return $resource(api + endpoint.url, params, {
             'update': {
-              'method': 'PATCH'
+              'method': 'PATCH',
+              'transformResponse': getResponseTransformer()
+            },
+            'get': {
+              'method': 'GET',
+              'transformResponse': getResponseTransformer()
+            },
+            'query': {
+              'isArray': true,
+              'method': 'GET',
+              'transformResponse': getResponseTransformer()
+            },
+            'save': {
+              'method': 'POST',
+              'transformResponse': getResponseTransformer()
+            },
+            'options': {
+              'method': 'OPTIONS'
             }
           });
 
@@ -86,6 +103,12 @@
 
               for (var i = 0; i < response.length; i++) {
 
+                if (!response[i].id && response[i].url) {
+
+                  var split = response[i].url.split('/');
+                  response[i].id = split[split.length - 2];
+                }
+
                 angular.forEach(subendpoints, function (endpoint) {
                   var subEndpointName = (endpoint.name ? endpoint.name : endpoint.url.replace('/', ''));
                   response[i]['$' + subEndpointName] = subResourceGenerator(endpoint, response[i]);
@@ -99,6 +122,11 @@
                 var subEndpointName = (endpoint.name ? endpoint.name : endpoint.url.replace('/', ''));
                 response['$' + subEndpointName] = subResourceGenerator(endpoint, response);
               });
+
+              if (!response.id && response.url) {
+                var split = response.url.split('/');
+                response.id = split[split.length - 2];
+              }
             }
 
             response.$ready = ready.promise;

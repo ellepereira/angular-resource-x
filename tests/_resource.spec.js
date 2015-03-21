@@ -15,11 +15,9 @@ describe('_resource', function () {
     person : {'url': 'http://api.com/member/36/'}
   };
 
-  var mockCars,
-    mockOwners;
 
-  beforeEach(module('_resource.mocks.Cars'));
-  beforeEach(module('_resource.mocks.Owners'));
+  beforeEach(module('_resourceMocks.cars'));
+  beforeEach(module('_resourceMocks.owners'));
 
 
   beforeEach(module('resourceExtend', function($provide, $injector, _resourceProvider){
@@ -36,21 +34,25 @@ describe('_resource', function () {
     _resource,
     $httpBackend,
     $rootScope,
-    $q;
+    $q,
+    mockCars,
+    mockOwners;
 
-  beforeEach(inject(function (_$httpBackend_, __resource_, _$q_, _$rootScope_) {
+  beforeEach(inject(function (_$httpBackend_, __resource_, _$q_, _$rootScope_, _Cars_, _Owners_) {
 
     $httpBackend = _$httpBackend_;
     _resource = __resource_;
     $q = _$q_;
     $rootScope = _$rootScope_;
+    mockCars = _Cars_;
+    mockOwners = _Owners_;
 
     $httpBackend.whenGET(/cars\/[0-9]/).respond(mockCars[1]);
     $httpBackend.whenGET(/cars/).respond(mockCars);
     $httpBackend.whenGET(/owners/).respond(mockOwners);
 
     Cars = _resource('cars/:id/', {'id':'@id'})
-      .child('owners', _resource('owners/:id/', {'id':'@id', 'car_id':'^id'}));
+              .child('owners', _resource('owners/:id/', {'id':'@id', 'car_id':'^id'}));
   }));
 
   afterEach(inject(function($rootScope){
@@ -206,14 +208,14 @@ describe('_resource', function () {
 
   });
 
-  it('by default, getWithChildren is a method', function(){
+  it('by default, getWithChildren is a static', function(){
 
     Cars = _resource('cars/:id/', {'id':'@id'});
 
     var instanceCar = new Cars({'id':1});
 
-    expect(instanceCar.getWithChildren).toBeDefined();
-    expect(Cars.getWithChildren).toBeUndefined();
+    expect(Cars.getWithChildren).toBeDefined();
+    expect(instanceCar.getWithChildren).toBeUndefined();
 
   });
 

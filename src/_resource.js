@@ -29,12 +29,11 @@
       'childPrefix': '-',
       'extensions': null,
       'statics': {
-        'child': child
-      },
-      'params': {},
-      'methods': {
+        'child': child,
         'getWithChildren': getWithChildren
       },
+      'params': {},
+      'methods': null,
       'actions': {
         'update': {
           'method': 'PATCH'
@@ -248,24 +247,6 @@
     }
 
     /**
-     * Finds parameters that need to map to a parent $resource and attaches a function that will fetch the parent's
-     * value for that param.
-     * @param params {Object}
-     * @param resource {Object}
-     * @private
-     * @returns {Object}
-     */
-    function resolveParentParams(params, resource) {
-      forEach(params, function (param, key) {
-        if (param.charAt && param.charAt(0) == '^') {
-          params[key] = parentParamFunc(resource, param.substr(1));
-        }
-      });
-
-      return params;
-    }
-
-    /**
      * Special response transformer that first runs the user defined transformer and then our own to attach
      * our children.
      * @param actions {Object} actions hash to have response transformers added.
@@ -279,39 +260,6 @@
       });
 
       return actions;
-    }
-
-    /**
-     * Attaches children $resources to this instantiated $resource.
-     * @param entry {*}
-     * @param children {Object} hash of children $resources to be added to this $resource
-     * @private
-     */
-    function attachChildren(entry, children) {
-
-      if (!entry.$children) {
-        entry.$children = {};
-      }
-
-      forEach(children, function (child, name) {
-        var myChild = copy(child);
-        myChild.prototype.$parent = entry;
-        entry.$children[name] = myChild;
-      });
-    }
-
-    /**
-     * Function is run every time our $resource is used and attempts to fetch the value for our $parent if one of our
-     * parameters requires so.
-     * @param obj
-     * @param param
-     * @private
-     * @returns {Function}
-     */
-    function parentParamFunc(obj, param) {
-      return function () {
-        return lookupDottedPath(obj.prototype.$parent, param);
-      };
     }
 
     /**
@@ -344,6 +292,57 @@
         return response;
       };
 
+    }
+
+    /**
+     * Attaches children $resources to this instantiated $resource.
+     * @param entry {*}
+     * @param children {Object} hash of children $resources to be added to this $resource
+     * @private
+     */
+    function attachChildren(entry, children) {
+
+      if (!entry.$children) {
+        entry.$children = {};
+      }
+
+      forEach(children, function (child, name) {
+        var myChild = copy(child);
+        myChild.prototype.$parent = entry;
+        entry.$children[name] = myChild;
+      });
+    }
+
+    /**
+     * Finds parameters that need to map to a parent $resource and attaches a function that will fetch the parent's
+     * value for that param.
+     * @param params {Object}
+     * @param resource {Object}
+     * @private
+     * @returns {Object}
+     */
+    function resolveParentParams(params, resource) {
+      forEach(params, function (param, key) {
+        if (param.charAt && param.charAt(0) == '^') {
+          params[key] = parentParamFunc(resource, param.substr(1));
+        }
+      });
+
+      return params;
+    }
+
+    /**
+     * Function is run every time our $resource is used and attempts to fetch the value for our $parent if one of our
+     * parameters requires so.
+     * @param obj
+     * @param param
+     * @private
+     * @returns {Function}
+     */
+    function parentParamFunc(obj, param) {
+      return function () {
+        return lookupDottedPath(obj.prototype.$parent, param);
+      };
     }
 
 

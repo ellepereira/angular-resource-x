@@ -3,7 +3,7 @@
   'use strict';
 
   angular
-    .module('resourceExtend', ['ngResource'])
+    .module('resourceX', ['ngResource'])
     .provider('_resource', _resource);
 
   var forEach = angular.forEach,

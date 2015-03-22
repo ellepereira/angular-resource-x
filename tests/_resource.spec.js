@@ -1,223 +1,244 @@
 'use strict';
 
-//phantomjs doesn't support bind in versions below 2 :(
-/*Function.prototype.bind = Function.prototype.bind || function (thisp) {
-  var fn = this;
-  return function () {
-    return fn.apply(thisp, arguments);
-  };
-};*/
-
 describe('_resource', function () {
 
-  var mockRole = {
-    selectedRole : {'slug':'test-role', 'url': 'http://api.com/member/36'},
-    person : {'url': 'http://api.com/member/36/'}
-  };
+  describe('$resource tests', resourceTests);
+  describe('Configurations', configurationsTests);
+  describe('Nesting Resources', nestingTests);
+  describe('Methods, Statics and Extensions', methodsTests);
+  //describe('Edge cases', function(){});
 
-
-  beforeEach(module('_resourceMocks.cars'));
-  beforeEach(module('_resourceMocks.owners'));
-
-
-  beforeEach(module('resourceExtend', function($provide, $injector, _resourceProvider){
-
-    $provide.value('Roles', mockRole);
-
-    _resourceProvider.defaults.params = function(Roles){
-      return {'user_role': Roles.selectedRole.slug};
-    }
-  }));
-
-  // instantiate service
-  var Cars,
+  ///////////////////////////////////////////
+  //// shared variables
+  var Departments,
     _resource,
     $httpBackend,
-    $rootScope,
-    $q,
-    mockCars,
-    mockOwners;
+    mocks = {};
 
-  beforeEach(inject(function (_$httpBackend_, __resource_, _$q_, _$rootScope_, _Cars_, _Owners_) {
+  ///////////////////////////////////////////
+  //// mocks
+  beforeEach(module('_resourceMocks.people'));
+  beforeEach(module('_resourceMocks.departments'));
+  
+  ///////////////////////////////////////////
+  //// different initializations
+  function initDefault(){
+    beforeEach(module('resourceX', function($provide, _resourceProvider) {
 
-    $httpBackend = _$httpBackend_;
-    _resource = __resource_;
-    $q = _$q_;
-    $rootScope = _$rootScope_;
-    mockCars = _Cars_;
-    mockOwners = _Owners_;
+      $provide.value('Roles', {
+        selectedRole: {'slug': 'test-role', 'url': 'http://api.com/member/36'},
+        person: {'url': 'http://api.com/member/36/'}
+      });
 
-    $httpBackend.whenGET(/cars\/[0-9]/).respond(mockCars[1]);
-    $httpBackend.whenGET(/cars/).respond(mockCars);
-    $httpBackend.whenGET(/owners/).respond(mockOwners);
+      _resourceProvider.defaults.params = function (Roles) {
+        return {'user_role': Roles.selectedRole.slug};
+      };
 
-    Cars = _resource('cars/:id/', {'id':'@id'})
-              .child('owners', _resource('owners/:id/', {'id':'@id', 'car_id':'^id'}));
-  }));
+    }));
 
-  afterEach(inject(function($rootScope){
-    $rootScope.$apply();
-  }));
+    beforeEach(inject(function (_$httpBackend_, __resource_, _People_, _Departments_) {
 
-  it('should initialize correctly', function () {
-    expect(Cars).toBeDefined();
-  });
+      $httpBackend = _$httpBackend_;
+      _resource = __resource_;
+      mocks.departments = _Departments_;
+      mocks.people = _People_;
 
-  it('Can get list of _resource instances using query', function () {
-    var cars = Cars.query();
-    $httpBackend.expectGET(/cars/);
-    $httpBackend.flush();
-    expect(cars.length).toBe(4);
-    expect(cars[0].url).toBe("http://api.com/cars/1");
-  });
+      Departments = _resource('departments/:id/', {'id': '@id'})
+        .child('employees', _resource('people/:id/', {'id': '@id', 'department': '^id'}));
+    }));
 
-  it('Each fetched _resource result is an instance of _resource', function () {
-    var cars = Cars.query();
-    $httpBackend.expectGET(/cars/);
-    $httpBackend.flush();
-    expect(cars.length).toBe(4);
-    expect(cars[0].$children).toBeDefined();
-  });
+    afterAll(function(){
+      Departments = null;
+      _resource = null;
+      $httpBackend = null;
+      mocks = {};
+    })
+  }
 
-  it('Can get a single instance of _resource using GET', function () {
-    var cars = Cars.get({'id':'2'});
-    $httpBackend.flush();
-    expect(cars.url).toBe("http://api.com/cars/2");
-  });
+  ///////////////////////////////////////////
+  //// tests
+  function configurationsTests(){
 
-  it('the retrieved element will have the configured nested resources', function () {
-    var cars = Cars.get({'id':'2'});
-    $httpBackend.flush();
-    expect(cars.$children.owners).toBeDefined();
-  });
+    initDefault();
 
-  it('can retrieve nested resources with a mapped parameter to the parent', function () {
-    var car = Cars.get({'id':'1'});
-    $httpBackend.flush();
-    $httpBackend.expectGET('owners?car_id=2').respond(200);
-    car.$children.owners.query();
-    $httpBackend.flush();
-    expect(car.$children.owners).toBeDefined();
-  });
-
-
-  it('Can create a new _resource', function () {
-    var car = new Cars;
-    car.name = "Test";
-    car.$save();
-    $httpBackend.expectPOST('cars', {name : 'Test'}).respond(200);
-    $httpBackend.flush();
-
-    expect(car.name).toBe('Test');
-
-  });
-
-  it('Can modify an instance _resource', function () {
-
-    var car = Cars.get({'id':'2'});
-    $httpBackend.flush();
-
-    car.name = 'Patchy';
-    $httpBackend.expectPATCH(/cars\/2/).respond(200);
-    car.$update();
-    $httpBackend.flush();
-
-    expect(car.name).toBe('Patchy');
-
-  });
-
-  it('Can extend _resource', function(){
-    Cars = _resource('cars/:id/', {'id':'@id'}, [
-      {
-        'name': 'other_regions',
-        'endpoint': 'cars/:id/',
-        'params' : {'id':'@id'}
-      }
-    ]).extend('test', function(){
-      return 'rest result';
+    it('should initialize correctly', function () {
+      expect(Departments).toBeDefined();
     });
 
-    expect(Cars.test).toBeDefined();
-    expect(Cars.test()).toBe('rest result');
+  }
 
-  });
+  function nestingTests(){
 
-  it('Extended methods go into instances of and _resource itself', function(){
+    initDefault();
 
-    Cars = _resource('cars/:id/', {'id':'@id'}, [
-      {
-        'name': 'other_regions',
-        'endpoint': 'cars/:id/',
-        'params' : {'id':'@id'}
-      }
-    ])
-      .extend('test', function(){
+    it('the retrieved element will have the configured nested resources', function () {
+      var departments = Departments.get({'id':'2'});
+      $httpBackend.expectGET(/departments\/2/).respond(mocks.departments[1]);
+      $httpBackend.flush();
+      expect(departments.$children['employees']).toBeDefined();
+    });
+
+    it('can retrieve nested resources with a mapped parameter to the parent', function () {
+
+      var department = Departments.get({'id':'1'});
+      $httpBackend.expectGET(/departments\/1/).respond(mocks.departments[0]);
+      $httpBackend.flush();
+      $httpBackend.expectGET('people?department=1').respond(200);
+      department.$children['employees'].query();
+      $httpBackend.flush();
+      expect(department.$children['employees']).toBeDefined();
+    });
+
+  }
+
+  function methodsTests(){
+
+    initDefault();
+
+    it('by default, getWithChildren is a static', function(){
+      Departments = _resource('departments/:id/', {'id':'@id'});
+      var instanceCar = new Departments({'id':1});
+      expect(Departments.getWithChildren).toBeDefined();
+      expect(instanceCar.getWithChildren).toBeUndefined();
+    });
+
+    it('Can extend _resource', function(){
+      Departments = _resource('departments/:id/', {'id':'@id'}, [
+        {
+          'name': 'other_regions',
+          'endpoint': 'departments/:id/',
+          'params' : {'id':'@id'}
+        }
+      ]).extend('test', function(){
         return 'rest result';
-      })
-      .extend('testOwner', function(){
-        return this.id;
       });
 
-    var instanceCar = new Cars({'id':1});
+      expect(Departments.test).toBeDefined();
+      expect(Departments.test()).toBe('rest result');
 
-    expect(instanceCar.test).toBeDefined();
-    expect(instanceCar.testOwner()).toBe(1);
+    });
 
-  });
+    it('Extended methods go into instances of and _resource itself', function(){
 
-  it('Static methods go into _resource', function(){
+      Departments = _resource('departments/:id/', {'id':'@id'}, [
+        {
+          'name': 'other_regions',
+          'endpoint': 'departments/:id/',
+          'params' : {'id':'@id'}
+        }
+      ])
+        .extend('test', function(){
+          return 'rest result';
+        })
+        .extend('testOwner', function(){
+          return this.id;
+        });
 
-    Cars = _resource('cars/:id/', {'id':'@id'}, [
-      {
-        'name': 'other_regions',
-        'endpoint': 'cars/:id/',
-        'params' : {'id':'@id'}
-      }
-    ])
-      .static('test', function(){
-        return 'rest result';
-      });
+      var instanceCar = new Departments({'id':1});
 
-    var instanceCar = new Cars({'id':1});
+      expect(instanceCar.test).toBeDefined();
+      expect(instanceCar.testOwner()).toBe(1);
 
-    expect(Cars.test).toBeDefined();
-    expect(instanceCar.test).toBeUndefined();
+    });
 
-  });
+    it('Static methods go into _resource', function(){
 
-  it('Instance methods go into _resource instances, not the generator', function(){
+      Departments = _resource('departments/:id/', {'id':'@id'}, [
+        {
+          'name': 'other_regions',
+          'endpoint': 'departments/:id/',
+          'params' : {'id':'@id'}
+        }
+      ])
+        .static('test', function(){
+          return 'rest result';
+        });
 
-    Cars = _resource('cars/:id/', {'id':'@id'}, [
-      {
-        'name': 'other_regions',
-        'endpoint': 'cars/:id/',
-        'params' : {'id':'@id'}
-      }
-    ])
-      .method('test', function(){
-        return this.$$url;
-      });
+      var instanceCar = new Departments({'id':1});
 
-    var instanceCar = new Cars({'id':1});
+      expect(Departments.test).toBeDefined();
+      expect(instanceCar.test).toBeUndefined();
 
-    $httpBackend.expect('OPTIONS', /cars/).respond(200);
-    Cars.options();
+    });
 
-    expect(Cars.test).toBeUndefined();
-    expect(instanceCar.test).toBeDefined();
+    it('Instance methods go into _resource instances, not the generator', function(){
 
-  });
+      Departments = _resource('departments/:id/', {'id':'@id'}, [
+        {
+          'name': 'other_regions',
+          'endpoint': 'departments/:id/',
+          'params' : {'id':'@id'}
+        }
+      ])
+        .method('test', function(){
+          return this.$$url;
+        });
 
-  it('by default, getWithChildren is a static', function(){
+      var instanceCar = new Departments({'id':1});
 
-    Cars = _resource('cars/:id/', {'id':'@id'});
+      $httpBackend.expect('OPTIONS', /departments/).respond(200);
+      Departments.options();
 
-    var instanceCar = new Cars({'id':1});
+      expect(Departments.test).toBeUndefined();
+      expect(instanceCar.test).toBeDefined();
 
-    expect(Cars.getWithChildren).toBeDefined();
-    expect(instanceCar.getWithChildren).toBeUndefined();
+    });
+  }
 
-  });
+  function resourceTests(){
 
+    initDefault();
+
+    it('Can create a new _resource', function () {
+      var department = new Departments;
+      department.name = "Test";
+      department.$save();
+      $httpBackend.expectPOST('departments', {name : 'Test'}).respond(200);
+      $httpBackend.flush();
+
+      expect(department.name).toBe('Test');
+
+    });
+
+    it('Can modify an instance _resource', function () {
+
+      var department = Departments.get({'id':'2'});
+      $httpBackend.expectGET(/departments\/2/).respond(200).respond(mocks.departments[1]);
+      $httpBackend.flush();
+
+      department.name = 'Patchy';
+      $httpBackend.expectPATCH(/departments\/2/).respond(200);
+      department.$update();
+      $httpBackend.flush();
+
+      expect(department.name).toBe('Patchy');
+    });
+
+    it('Can get list of _resource instances using query', function () {
+      var departments = Departments.query();
+      $httpBackend.expectGET(/departments/).respond(mocks.departments);
+      $httpBackend.flush();
+      expect(departments.length).toBe(4);
+      expect(departments[0].url).toBe("http://api.com/departments/1");
+    });
+
+    it('Each fetched _resource result is an instance of _resource', function () {
+      var departments = Departments.query();
+      $httpBackend.expectGET(/departments/).respond(mocks.departments);
+      $httpBackend.flush();
+      expect(departments.length).toBe(4);
+      expect(departments[0].$children).toBeDefined();
+    });
+
+    it('Can get a single instance of _resource using GET', function () {
+      var departments = Departments.get({'id':'2'});
+      $httpBackend.expectGET(/departments\/2/).respond(mocks.departments[1]);
+      $httpBackend.flush();
+      expect(departments.url).toBe("http://api.com/departments/2");
+    });
+  }
 
 });
+
+
+

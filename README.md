@@ -1,8 +1,8 @@
-# `_resource` (ng-resource-x)
+# `$resourceX` (ng-resource-x)
 
 ## Get All You Need out of $resource!
 
-The resource extension (`_resource`) service wraps angular's `$resource` service to provide the following utilities:
+The resource extension (`$resourceX`) service wraps angular's `$resource` service to provide the following utilities:
 * **Nested Resources**: resources _always_ have relationships, $resource should be aware of them!
 * **Methods**: No more creating a separate service to manage your $resource's business logic and validation!
 * **One Get to Get Them All**: Don't pollute your ui-router resolve with 4 different calls to build one object, get all the relationships at once!
@@ -10,9 +10,9 @@ The resource extension (`_resource`) service wraps angular's `$resource` service
 ## Usage
 ```javascript
 //In this example, we have a Department resource which has employees as a sub-resource.
-var Department = _resource('departments/:id/', {'id':'@department_id'})
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
     //nested resource
-    .child('employees', _resource('people/:id/', {id:'@id', department:'^department_id'});
+    .child('employees', $resourceX('people/:id/', {id:'@id', department:'^department_id'});
     //instance methods
     .method('hire', hireMethod)
     //static methods
@@ -49,7 +49,7 @@ function example(){
 }
 ```
 
-You don't have to use .getWithChildren at all, all children are just added as an array to the `_resource` as well:
+You don't have to use .getWithChildren at all, all children are just added as an array to the `$resourceX` as well:
 ```javascript
 //Say we want to get all the female workers who work in accounting
 var Accounting = Department.get({'name':'Accounting'});
@@ -63,24 +63,24 @@ function example(){
 }
 ```
 
-### Creating a `_resource`
-`_resource` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `_resource`.
+### Creating a `$resourceX`
+`$resourceX` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `$resourceX`.
 
 #### Nesting Resources
-The `^` as the first character in a param map stands in place of a `@` letting `_resource` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
+The `^` as the first character in a param map stands in place of a `@` letting `$resourceX` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
 ```javascript
-var People = _resource('people/:id/', {id:'@id', department:'@$parent.department_id'})
+var People = $resourceX('people/:id/', {id:'@id', department:'@$parent.department_id'})
 ```
 Either way, the People resource will look for a parent containing the department_id value and pass it on to all its calls. This way when its created through a parent department, all subsequent calls to People will attempt to filter by department_id.
 
 #### Using Nested Resources
 You can then nest the declared resource using the `child(name, function)` method. The method can also take in all children at once if you pass in an object, like so:
 ```javascript
-//declare both employees and computers nested _resources
-var Department = _resource('departments/:id/', {'id':'@department_id'})
+//declare both employees and computers nested $resourceXs
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
     .child({
-      'employees': _resource('people/:id/', {'id':'@id', 'department':'^department_id'}),
-      'computers': _resource('computers/:id/', {'id':'@comp_id', 'department':'^department_id'})
+      'employees': $resourceX('people/:id/', {'id':'@id', 'department':'^department_id'}),
+      'computers': $resourceX('computers/:id/', {'id':'@comp_id', 'department':'^department_id'})
     });
 ```
 Once nested, resources can be accessed through the `$children` property on the parent or may automatically be loaded using the `getWithChildren(params, children)` method.
@@ -95,15 +95,15 @@ console.log(IT._computers); //outputs the computers belonging to this department
 ```
 
 #### Adding Methods
-There are 3 different kinds of methods you can attach to a `_resource`:
-* method - Methods only attach to an instantiated `_resource` (so the `_resource` once you get it back from the database or create using new).
-* static - Statics (short for static methods) only attach to the `_resource` and not its instances (so Department, but not IT).
+There are 3 different kinds of methods you can attach to a `$resourceX`:
+* method - Methods only attach to an instantiated `$resourceX` (so the `$resourceX` once you get it back from the database or create using new).
+* static - Statics (short for static methods) only attach to the `$resourceX` and not its instances (so Department, but not IT).
 * extend - is really just both a method and a static. The developer will need to be aware of the context on their own.
 
 There's many ways to add methods, as shown:
 ```javascript
 //using func(name, method) syntax:
-var Department = _resource('departments/:id/', {'id':'@department_id'})
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
   // hires a person to work at a department. "this" is the specific instance of a department
   .method('hire', function(person){
     this._employees.push(person);

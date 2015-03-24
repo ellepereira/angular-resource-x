@@ -124,7 +124,7 @@
      * @param child {Object}
      * @public
      * @static
-     * @returns {_resource.child}
+     * @returns {$resourceX.child}
      */
     function child(name, child) {
       this.$children = this.$children || {};

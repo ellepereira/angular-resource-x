@@ -19,6 +19,8 @@ describe('$resourceX', function () {
     $resourceX,
     resourceXProvider,
     $httpBackend,
+    CreditCard,
+    callback,
     mocks = {};
 
   ///////////////////////////////////////////
@@ -46,9 +48,7 @@ describe('$resourceX', function () {
         person: {'url': 'http://api.com/member/36/'}
       });
 
-      $resourceXProvider.defaults.params = function (Roles) {
-        return {'user_role': Roles.selectedRole.slug};
-      };
+      $resourceXProvider.defaults.params['user_role'] = 'test_role';
 
       resourceXProvider = $resourceXProvider;
 
@@ -85,12 +85,15 @@ describe('$resourceX', function () {
 
     initAllDefault();
 
-    it('should initialize correctly', function () {
-      expect(Departments).toBeDefined();
-    });
-
-    it('should have default params', function () {
-      expect(resourceXProvider.defaults).toBeDefined();
+    it('should have all default params', function () {
+      expect(resourceXProvider.defaults.baseUrl).toBeDefined();
+      expect(resourceXProvider.defaults.childPrefix).toBe('_');
+      expect(resourceXProvider.defaults.extensions).toBeDefined();
+      expect(resourceXProvider.defaults.statics).toBeDefined();
+      expect(resourceXProvider.defaults.statics.getWithChildren).toBeDefined();
+      expect(resourceXProvider.defaults.statics.child).toBeDefined();
+      expect(resourceXProvider.defaults.params).toBeDefined();
+      expect(resourceXProvider.defaults.methods).toBeDefined();
     });
 
     it('should have set baseURL default param', function () {
@@ -98,7 +101,8 @@ describe('$resourceX', function () {
     });
 
     it('should have set user_role as a default request param', function () {
-      expect(resourceXProvider.defaults).toBeDefined();
+      expect(resourceXProvider.defaults.params.user_role).toBeDefined();
+      expect(resourceXProvider.defaults.params['user_role']).toBe('test_role');
     });
 
   }
@@ -119,7 +123,7 @@ describe('$resourceX', function () {
       var department = Departments.get({'id': '1'});
       $httpBackend.expectGET(/departments\/1/).respond(mocks.departments[0]);
       $httpBackend.flush();
-      $httpBackend.expectGET('people?department=1').respond(200);
+      $httpBackend.expectGET(/people\?department=1/).respond(200);
       department.$children['employees'].query();
       $httpBackend.flush();
       expect(department.$children['employees']).toBeDefined();
@@ -229,7 +233,7 @@ describe('$resourceX', function () {
       var department = new Departments;
       department.name = "Test";
       department.$save();
-      $httpBackend.expectPOST('departments', {name: 'Test'}).respond(200);
+      $httpBackend.expectPOST(/departments/, {name: 'Test'}).respond(200);
       $httpBackend.flush();
 
       expect(department.name).toBe('Test');

@@ -16,7 +16,7 @@ However the resource extension (`$resourceX`) service wraps angular's `$resource
 ```javascript
 //In this example, we have a Department resource which has employees as a sub-resource.
 var Department = $resourceX('departments/:id/', {'id':'@department_id'})
-    //nested resource
+    //related resource
     .child('employees', $resourceX('people/:id/', {id:'@id', department:'^department_id'});
     //instance methods
     .method('hire', hireMethod)

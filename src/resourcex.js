@@ -3,8 +3,8 @@
   'use strict';
 
   angular
-    .module('resourceX', ['ngResource'])
-    .provider('_resource', _resource);
+    .module('ngResourceX', ['ngResource'])
+    .provider('$resourceX', $resourceX);
 
   var forEach = angular.forEach,
     extend = angular.extend,
@@ -18,7 +18,7 @@
    * Adds extensibility and child resources to the Angular $resource module.
    * @class
    */
-  function _resource() {
+  function $resourceX() {
 
     var provider = this;
     provider.$get = $get;
@@ -26,7 +26,7 @@
     //defaults holds all the configs
     provider.defaults = {
       'baseUrl': null,
-      'childPrefix': '-',
+      'childPrefix': '_',
       'extensions': null,
       'statics': {
         'child': child,

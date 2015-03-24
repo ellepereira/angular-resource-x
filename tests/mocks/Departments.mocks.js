@@ -1,7 +1,7 @@
 'use strict';
 
 angular.
-  module('_resourceMocks.departments', [])
+  module('resourceMocks.departments', [])
   .value('Departments', [
     {
       'id': 1,

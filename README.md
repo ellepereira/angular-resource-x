@@ -2,10 +2,15 @@
 
 ## Get All You Need out of $resource!
 
-The resource extension (`$resourceX`) service wraps angular's `$resource` service to provide the following utilities:
-* **Nested Resources**: resources _always_ have relationships, $resource should be aware of them!
-* **Methods**: No more creating a separate service to manage your $resource's business logic and validation!
-* **One Get to Get Them All**: Don't pollute your ui-router resolve with 4 different calls to build one object, get all the relationships at once!
+How do you use $resourceX? Well, you can use it exactly the same as plain $resource.
+```javascript
+var departments = $resourceX('departments/:id/', {'id':'@id'});
+```
+
+However the resource extension (`$resourceX`) service wraps angular's `$resource` service to provide the following utilities:
+* **[Relationships](#resource-relationships)**: resources _always_ have relationships, $resource should be aware of them!
+* **[Methods](#adding-methods)**: No more creating a separate service to manage your $resource's business logic and validation!
+* **[One Call, Get All](#using-nested-resources)**: Don't pollute your ui-router resolve with 4 different calls to build one object, get all the relationships at once!
 
 ## Usage
 ```javascript
@@ -66,7 +71,7 @@ function example(){
 ### Creating a `$resourceX`
 `$resourceX` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `$resourceX`.
 
-#### Nesting Resources
+#### Resource Relationships
 The `^` as the first character in a param map stands in place of a `@` letting `$resourceX` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
 ```javascript
 var People = $resourceX('people/:id/', {id:'@id', department:'@$parent.department_id'})

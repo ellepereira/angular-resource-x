@@ -15,7 +15,7 @@
 
   /**
    * $resource utilities extension.
-   * Adds extensibility and child resources to the Angular $resource module.
+   * Adds extensibility and related resources to the Angular $resource module.
    * @class
    */
   function $resourceX() {
@@ -26,14 +26,16 @@
     //defaults holds all the configs
     provider.defaults = {
       'baseUrl': null,
-      'childPrefix': '_',
-      'extensions': null,
+      'relationPrefix': '_',
+      'methods': {
+        //'relationships': relationships
+      },
       'statics': {
-        'child': child,
-        'getWithChildren': getWithChildren
+        'relate': relate,
+        //'getFull': getFull,
+        'relationships': relationships
       },
       'params': {},
-      'methods': null,
       'actions': {
         'update': {
           'method': 'PATCH'
@@ -64,7 +66,7 @@
     function $get($resource, $q) {
 
       /**
-       * Wrapper for $resource. Creates a $resource and adds default methods/statics/extensions
+       * Wrapper for $resource. Creates a $resource and adds default methods/statics
        * @param url {string} URL of this $resource
        * @param params {Object} hash of parameters, same as $resource but modified to support ^ to map to parent properties.
        * @param actions {Object} hash of actions, see $resource documentation
@@ -85,7 +87,6 @@
         //Exposed methods
         resource.method = method;
         resource.static = staticMethod;
-        resource.extend = extendMethod;
 
         init();
 
@@ -99,16 +100,60 @@
           resolveParentParams(resParams, resource);
           addResponseTransformers(resActions, resource);
 
-          //add default extensions/methods/statics
-          forEach(provider.defaults.extensions, function (func, key) {
-            resource.extend(key, func);
-          });
+          //add default methods/statics
           forEach(provider.defaults.methods, function (func, key) {
             resource.method(key, func);
           });
           forEach(provider.defaults.statics, function (func, key) {
             resource.static(key, func);
           });
+
+          resource.static('getFull', getFull);
+          resource.$relationships = {};
+        }
+
+        /**
+         * Does a GET but also resolves sub-resources
+         * @param getParams {Object} standard $http GET params
+         * @param relatedResourcesNames {string[]} names of the related resources to query for
+         * @public
+         * @instance
+         */
+        function getFull(getParams, relatedResourcesNames) {
+
+          var deferred = $q.defer(),
+            prefix = provider.defaults.relationPrefix,
+            placeholder = extend(new this(), {
+              '$promise': deferred.promise,
+              '$ready': false
+            });
+
+          if(!relatedResourcesNames){
+            relatedResourcesNames = Object.keys(resource.$relationships);
+          }
+
+          deferred.promise = this.get(getParams).$promise.then(gotParentResults);
+
+          function gotParentResults(resource) {
+
+            //if this $resource has related resources
+            if (resource.$relationships) {
+
+              //go through the related resources we were asked to grab
+              $q.all(forEach(relatedResourcesNames, function (name) {
+
+                //run their queries and assign the prefixed results to the parent
+                return resource.$relationships[name].query().$promise
+                  .then(function gotRelatedResults(relatedResults) {
+                    resource[prefix + name] = relatedResults;
+                    return resource;
+                  });
+              }));
+            }
+
+          }
+
+          return placeholder;
         }
       }
 
@@ -121,55 +166,26 @@
     /**
      * Adds a sub-resource to this $resource
      * @param name {string}
-     * @param child {Object}
+     * @param resource {Object}
      * @public
      * @static
-     * @returns {$resourceX.child}
+     * @returns {$resourceX.relate}
      */
-    function child(name, child) {
-      this.$children = this.$children || {};
-      this.$children[name] = child;
+    function relate(name, resource) {
+      this.$relationships[name] = resource;
       return this;
     }
 
     /**
-     * Does a GET but also resolves sub-resources
-     * @param getParams {Object} standard $http GET params
-     * @param childrenNames {string[]} names of the child resources to query for
+     * Sets/Gets related resources
+     * @param [relationships] {Object} hash of related resource factories
      * @public
-     * @instance
+     * @static
+     * @return {*}
      */
-    function getWithChildren(getParams, childrenNames) {
-
-      var deferred = $q.defer(),
-        prefix = provider.defaults.childPrefix,
-        placeholder = extend(new this(), {
-          '$promise': deferred.promise,
-          '$ready': false
-        });
-
-      deferred.promise = this.get(getParams).$promise.then(gotParentResults);
-
-      function gotParentResults(parent) {
-
-        //if this $resource has children
-        if (parent.$children) {
-
-          //go through the children we were asked to grab
-          $q.all(forEach(childrenNames, function (childName) {
-
-            //run their queries and assign the prefixed results to the parent
-            return parent.$children[childName].query().$promise
-              .then(function gotChildResults(child) {
-                parent[prefix + childName] = child;
-                return parent;
-              });
-          }));
-        }
-
-      }
-
-      return placeholder;
+    function relationships(relationships){
+      this.$relationships = relationships;
+      return this;
     }
 
     // EXTENDER METHODS
@@ -203,22 +219,6 @@
       return this;
     }
 
-    /**
-     * Adds both a "static" and "method" extension to this  $resource. These methods work on both instantiated and
-     * non-instantiated $resources.
-     * @param arg1 {string|Object|Object[]} A key-value pair containing method name and definition OR an array of
-     * key value pairs OR the method name (definition on the next param)
-     * @param [func] {Function} if the first parameter is a string of the method name, this parameter will be used as
-     * the definition
-     * @public
-     * @returns {*}
-     */
-    function extendMethod(arg1, func) {
-      this.method(arg1, func);
-      this.static(arg1, func);
-      return this;
-    }
-
 
     // PRIVATES
     ////////////////////////////////////////////////////////////
@@ -236,19 +236,19 @@
       if (isString(arg1)) {
         src[arg1] = func;
       }
-      else if (isObject(arg1)) {
-        extend(src, arg1);
-      }
       else if (isArray(arg1)) {
         forEach(arg1, function (method) {
           extend(src, method);
         });
       }
+      else if (isObject(arg1)) {
+        extend(src, arg1);
+      }
     }
 
     /**
      * Special response transformer that first runs the user defined transformer and then our own to attach
-     * our children.
+     * our related resources.
      * @param actions {Object} actions hash to have response transformers added.
      * @param resource {Object}
      * @private
@@ -264,13 +264,13 @@
 
     /**
      * Response transformer that first calls the user defined transform and then applies our own (which adds the
-     * $children)
+     * $relationships)
      * @param otherTransform {Function}
-     * @param parent {Object}
+     * @param resource {Object}
      * @private
      * @returns {Function}
      */
-    function responseTransforms(otherTransform, parent) {
+    function responseTransforms(otherTransform, parentResource) {
 
       return function transformResponse(response) {
         if (otherTransform) {
@@ -282,11 +282,12 @@
 
         if (isArray(response)) {
           forEach(response, function (entry) {
-            attachChildren(entry, parent.$children);
+
+            attachRelations(entry, parentResource.$relationships);
           })
         }
         else {
-          attachChildren(response, parent.$children);
+          attachRelations(response, parentResource.$relationships);
         }
 
         return response;
@@ -295,22 +296,23 @@
     }
 
     /**
-     * Attaches children $resources to this instantiated $resource.
+     * Attaches related $resourceXs to this instantiated $resourceX.
      * @param entry {*}
-     * @param children {Object} hash of children $resources to be added to this $resource
+     * @param relationships {Object} hash of related $resourceXs to be added to this $resourceX
      * @private
      */
-    function attachChildren(entry, children) {
+    function attachRelations(entry, relationships) {
 
-      if (!entry.$children) {
-        entry.$children = {};
+      if (!entry.$relationships) {
+        entry.$relationships = {};
       }
 
-      forEach(children, function (child, name) {
-        var myChild = copy(child);
-        myChild.prototype.$parent = entry;
-        entry.$children[name] = myChild;
+      forEach(relationships, function (relatedResource, name) {
+        var myResource = copy(relatedResource);
+        myResource.prototype.$parent = entry;
+        entry.$relationships[name] = myResource;
       });
+
     }
 
     /**
@@ -351,15 +353,16 @@
     var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
 
     function isValidDottedPath(path) {
+
       return (path != null && path !== '' && path !== 'hasOwnProperty' &&
       MEMBER_NAME_REGEX.test('.' + path));
     }
 
     function lookupDottedPath(obj, path) {
-
       if (!isValidDottedPath(path)) {
         throw new Error('Dotted member path is invalid.', path);
       }
+
       var keys = path.split('.');
       for (var i = 0, ii = keys.length; i < ii && obj !== undefined; i++) {
         var key = keys[i];

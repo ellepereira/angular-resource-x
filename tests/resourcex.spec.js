@@ -9,7 +9,7 @@ describe('$resourceX', function () {
   //test nesting resources
   describe('Nesting Resources', nestingTests);
   //test methods and extending
-  describe('Methods, Statics and Extensions', methodsTests);
+  describe('Methods and Statics', methodsTests);
   //anything else/edge cases here
   //describe('Edge cases', function(){});
 
@@ -19,8 +19,6 @@ describe('$resourceX', function () {
     $resourceX,
     resourceXProvider,
     $httpBackend,
-    CreditCard,
-    callback,
     mocks = {};
 
   ///////////////////////////////////////////
@@ -49,6 +47,12 @@ describe('$resourceX', function () {
       });
 
       $resourceXProvider.defaults.params['user_role'] = 'test_role';
+      $resourceXProvider.defaults.methods = {
+        'testMethod': angular.noop
+      };
+      $resourceXProvider.defaults.extensions = {
+        'testExtension': angular.noop
+      };
 
       resourceXProvider = $resourceXProvider;
 
@@ -58,7 +62,11 @@ describe('$resourceX', function () {
   //resource inits
   function initDepartmentWithChild() {
     Departments = $resourceX('departments/:id/', {'id': '@id'})
-      .child('employees', $resourceX('people/:id/', {'id': '@id', 'department': '^id'}));
+      //.relate('employees', $resourceX('people/:id/', {'id': '@id', 'department': '^id'}));
+      .relationships({
+        'employees': $resourceX('people/:id/', {'id': '@id', 'department': '^id'}),
+        'computers': $resourceX('computers/:id/', {'id':'@id', 'department':'^id'})
+      });
   }
 
   //init our globals
@@ -87,11 +95,10 @@ describe('$resourceX', function () {
 
     it('should have all default params', function () {
       expect(resourceXProvider.defaults.baseUrl).toBeDefined();
-      expect(resourceXProvider.defaults.childPrefix).toBe('_');
-      expect(resourceXProvider.defaults.extensions).toBeDefined();
+      expect(resourceXProvider.defaults.relationPrefix).toBe('_');
       expect(resourceXProvider.defaults.statics).toBeDefined();
-      expect(resourceXProvider.defaults.statics.getWithChildren).toBeDefined();
-      expect(resourceXProvider.defaults.statics.child).toBeDefined();
+      //expect(resourceXProvider.defaults.statics.getFull).toBeDefined();
+      expect(resourceXProvider.defaults.statics.relate).toBeDefined();
       expect(resourceXProvider.defaults.params).toBeDefined();
       expect(resourceXProvider.defaults.methods).toBeDefined();
     });
@@ -105,6 +112,20 @@ describe('$resourceX', function () {
       expect(resourceXProvider.defaults.params['user_role']).toBe('test_role');
     });
 
+    it('new resources should have default statics', function(){
+      var R = $resourceX('test/api');
+      expect(R.getFull).toBeDefined();
+      expect(R.relate).toBeDefined();
+      expect(R.relationships).toBeDefined();
+    });
+
+    it('new resources should have default methods', function(){
+      var R = $resourceX('test/api');
+      var testR = new R();
+      expect(testR.testMethod).toBeDefined();
+    });
+
+
   }
 
   function nestingTests() {
@@ -115,7 +136,7 @@ describe('$resourceX', function () {
       var departments = Departments.get({'id': '2'});
       $httpBackend.expectGET(/departments\/2/).respond(mocks.departments[1]);
       $httpBackend.flush();
-      expect(departments.$children['employees']).toBeDefined();
+      expect(departments.$relationships['employees']).toBeDefined();
     });
 
     it('can retrieve nested resources with a mapped parameter to the parent', function () {
@@ -124,9 +145,9 @@ describe('$resourceX', function () {
       $httpBackend.expectGET(/departments\/1/).respond(mocks.departments[0]);
       $httpBackend.flush();
       $httpBackend.expectGET(/people\?department=1/).respond(200);
-      department.$children['employees'].query();
+      department.$relationships['employees'].query();
       $httpBackend.flush();
-      expect(department.$children['employees']).toBeDefined();
+      expect(department.$relationships['employees']).toBeDefined();
     });
 
   }
@@ -135,92 +156,85 @@ describe('$resourceX', function () {
 
     initAllDefault();
 
-    it('by default, getWithChildren is a static', function () {
-      Departments = $resourceX('departments/:id/', {'id': '@id'});
-      var instanceCar = new Departments({'id': 1});
-      expect(Departments.getWithChildren).toBeDefined();
-      expect(instanceCar.getWithChildren).toBeUndefined();
+    it('Can create a new relationship to a $resourceX', function () {
+      var testResourceX = $resourceX('testResource/:id', {'id':'@id'});
+      testResourceX.relate('testRelation', $resourceX('test/:testId', {'testId':'@testId'}));
+      expect(testResourceX.$relationships['testRelation']).toBeDefined();
     });
 
-    it('Can extend $resourceX', function () {
-      Departments = $resourceX('departments/:id/', {'id': '@id'}, [
-        {
-          'name': 'other_regions',
-          'endpoint': 'departments/:id/',
-          'params': {'id': '@id'}
-        }
-      ]).extend('test', function () {
-        return 'rest result';
-      });
 
-      expect(Departments.test).toBeDefined();
-      expect(Departments.test()).toBe('rest result');
-
+    it('getFull returns promise for resource with its related resources included', function () {
+      Departments.getFull({'id':1});
+      $httpBackend.expectGET(/departments\/1/).respond(mocks.departments[0]);
+      $httpBackend.expectGET(/people\?department=1/).respond(mocks.people);
+      $httpBackend.expectGET(/computers\?department=1/).respond([]);
+      $httpBackend.flush();
     });
 
-    it('Extended methods go into instances of and $resourceX itself', function () {
+    it('Static methods go into the resource factory', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'}, [
-        {
-          'name': 'other_regions',
-          'endpoint': 'departments/:id/',
-          'params': {'id': '@id'}
-        }
-      ])
-        .extend('test', function () {
-          return 'rest result';
-        })
-        .extend('testOwner', function () {
-          return this.id;
-        });
-
-      var instanceCar = new Departments({'id': 1});
-
-      expect(instanceCar.test).toBeDefined();
-      expect(instanceCar.testOwner()).toBe(1);
-
-    });
-
-    it('Static methods go into $resourceX', function () {
-
-      Departments = $resourceX('departments/:id/', {'id': '@id'}, [
-        {
-          'name': 'other_regions',
-          'endpoint': 'departments/:id/',
-          'params': {'id': '@id'}
-        }
-      ])
+      Departments = $resourceX('departments/:id/', {'id': '@id'})
         .static('test', function () {
           return 'rest result';
         });
 
-      var instanceCar = new Departments({'id': 1});
-
+      var instanceDepartment = new Departments({'id': 1});
       expect(Departments.test).toBeDefined();
-      expect(instanceCar.test).toBeUndefined();
+      expect(instanceDepartment.test).toBeUndefined();
 
     });
 
-    it('Instance methods go into $resourceX instances, not the generator', function () {
+    it('Instance methods go into resource instance', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'}, [
-        {
-          'name': 'other_regions',
-          'endpoint': 'departments/:id/',
-          'params': {'id': '@id'}
-        }
-      ])
+      Departments = $resourceX('departments/:id/', {'id': '@id'})
         .method('test', function () {
-          return this.$$url;
+          return this.id;
         });
 
-      var instanceCar = new Departments({'id': 1});
+      var instanceDepartment = new Departments({'id': 1});
 
       $httpBackend.expect('OPTIONS', /departments/).respond(200);
       Departments.options();
 
       expect(Departments.test).toBeUndefined();
-      expect(instanceCar.test).toBeDefined();
+      expect(instanceDepartment.test).toBeDefined();
+      expect(instanceDepartment.test()).toBe(1);
+
+    });
+
+    it('Can extend with an hash of methods', function () {
+
+      Departments = $resourceX('departments/:id/', {'id': '@id'})
+        .method(
+          {
+            'test': function () {
+              return this.id;
+            }
+          }
+        );
+
+      var instanceDepartment = new Departments({'id': 1});
+
+      expect(instanceDepartment.test).toBeDefined();
+      expect(instanceDepartment.test()).toBe(1);
+
+    });
+
+    it('Can extend with an Array of methods', function () {
+
+      Departments = $resourceX('departments/:id/', {'id': '@id'})
+        .method([
+          {
+            'test': function () {
+              return this.id;
+            }
+          }
+        ]);
+
+      var instanceDepartment = new Departments({'id': 1});
+
+      expect(instanceDepartment.test).toBeDefined();
+      expect(instanceDepartment.test()).toBe(1);
 
     });
   }
@@ -267,7 +281,7 @@ describe('$resourceX', function () {
       $httpBackend.expectGET(/departments/).respond(mocks.departments);
       $httpBackend.flush();
       expect(departments.length).toBe(4);
-      expect(departments[0].$children).toBeDefined();
+      expect(departments[0]).toBeDefined();
     });
 
     it('Can get a single instance of $resourceX using GET', function () {
@@ -275,6 +289,17 @@ describe('$resourceX', function () {
       $httpBackend.expectGET(/departments\/2/).respond(mocks.departments[1]);
       $httpBackend.flush();
       expect(departments.url).toBe("http://api.com/departments/2");
+    });
+
+    it('Catch invalid paramater', function () {
+      Departments.relate('bad', $resourceX('bad/:id/', {'id':'^'}));
+      var departments = Departments.query();
+      $httpBackend.expectGET(/departments/).respond(mocks.departments);
+      $httpBackend.flush();
+      spyOn(departments[0].$relationships['bad'], 'query').andCallThrough();
+      expect(departments[0].$relationships['bad'].query()).toThrowError();
+      $httpBackend.expectGET(/bad/).respond(mocks.departments);
+      $httpBackend.flush();
     });
   }
 

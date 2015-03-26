@@ -1,13 +1,13 @@
-# `$resourceX` (ng-resource-x)
+# `$resource_` (ng-resource-x)
 
 ## Get All You Need out of $resource!
 
-How do you use $resourceX? Well, you can use it exactly the same as plain $resource.
+How do you use $resource_? Well, you can use it exactly the same as plain $resource.
 ```javascript
-var departments = $resourceX('departments/:id/', {'id':'@id'});
+var departments = $resource_('departments/:id/', {'id':'@id'});
 ```
 
-However the resource extension (`$resourceX`) service wraps angular's `$resource` service to provide the following utilities:
+However the resource extension (`$resource_`) service wraps angular's `$resource` service to provide the following utilities:
 * **[Relationships](#resource-relationships)**: resources _always_ have relationships, $resource should be aware of them!
 * **[Methods](#adding-methods)**: No more creating a separate service to manage your $resource's business logic and validation!
 * **[One Call, Get All](#using-nested-resources)**: Don't pollute your ui-router resolve with 4 different calls to build one object, get all the relationships at once!
@@ -15,9 +15,9 @@ However the resource extension (`$resourceX`) service wraps angular's `$resource
 ## Usage
 ```javascript
 //In this example, we have a Department resource which has employees as a sub-resource.
-var Department = $resourceX('departments/:id/', {'id':'@department_id'})
+var Department = $resource_('departments/:id/', {'id':'@department_id'})
     //related resource
-    .child('employees', $resourceX('people/:id/', {id:'@id', department:'^department_id'});
+    .relate('employees', $resource_('people/:id/', {id:'@id', department:'^department_id'});
     //instance methods
     .method('hire', hireMethod)
     //static methods
@@ -41,58 +41,58 @@ function getManagersMethod(){
 Now that you've declared Departments and Employees, you can use them like so:
 
 ```javascript
-//by default, getWithChildren will get all children
+//by default, getFull will get all related resources
 var Sales = Department.getWithChildren({'name':'Sales'}); 
 //the above sends out 2 requests: GET /departments?name=Sales and GET /people?department_id=1
 Sales.$promise.then(example);
 
 function example(){
-  //by default we prefix children results with a '_' but it's configurable/removable
+  //by default we prefix related results with a '_' but it's configurable/removable
   Sales._people.hire(new Person({'name': 'Joey', 'jobTitle':'manager'}));
   //will output 'Joey says Hello!'
   console.log(Sales._people[0].name + ' says Hello!'); 
 }
 ```
 
-You don't have to use .getWithChildren at all, all children are just added as an array to the `$resourceX` as well:
+You don't have to use .getFull at all, all related resources are just added as an array to the `$resource_` as well:
 ```javascript
 //Say we want to get all the female workers who work in accounting
 var Accounting = Department.get({'name':'Accounting'});
 var Accounting.$promise.then(example);
 
 function example(){
-  var Accountants = Accounting.$children['employees'];
+  var Accountants = Accounting.$relationships['employees'];
   var FemaleAccountants = Accountants.query({'sex': 'female'});
   //the above request will look like: GET /people?department_id=2&sex=female
   //the department_id is inferred from the parent
 }
 ```
 
-### Creating a `$resourceX`
-`$resourceX` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `$resourceX`.
+### Creating a `$resource_`
+`$resource_` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `$resource_`.
 
 #### Resource Relationships
-The `^` as the first character in a param map stands in place of a `@` letting `$resourceX` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
+The `^` as the first character in a param map stands in place of a `@` letting `$resource_` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
 ```javascript
-var People = $resourceX('people/:id/', {id:'@id', department:'@$parent.department_id'})
+var People = $resource_('people/:id/', {id:'@id', department:'@$parent.department_id'})
 ```
 Either way, the People resource will look for a parent containing the department_id value and pass it on to all its calls. This way when its created through a parent department, all subsequent calls to People will attempt to filter by department_id.
 
-#### Using Nested Resources
-You can then nest the declared resource using the `child(name, function)` method. The method can also take in all children at once if you pass in an object, like so:
+#### Using Related Resources
+You can then nest the declared resource using the `relate(name, function)` method. To pass in more than one relationship at a time, use `relationships({})`:
 ```javascript
-//declare both employees and computers nested $resourceXs
-var Department = $resourceX('departments/:id/', {'id':'@department_id'})
-    .child({
-      'employees': $resourceX('people/:id/', {'id':'@id', 'department':'^department_id'}),
-      'computers': $resourceX('computers/:id/', {'id':'@comp_id', 'department':'^department_id'})
+//declare both employees and computers nested $resource_s
+var Department = $resource_('departments/:id/', {'id':'@department_id'})
+    .relationships({
+      'employees': $resource_('people/:id/', {'id':'@id', 'department':'^department_id'}),
+      'computers': $resource_('computers/:id/', {'id':'@comp_id', 'department':'^department_id'})
     });
 ```
-Once nested, resources can be accessed through the `$children` property on the parent or may automatically be loaded using the `getWithChildren(params, children)` method.
+Once related, resources can be accessed through the `$relationships` property on the `$resource_` or may automatically be loaded using the `getFull(params, resources)` method.
 ```javascript
 //... skipping the promises part for these examples
 var IT = Department.get({'name':'IT'});
-var computers = IT.$children['computers'].query();
+var computers = IT.$relationships['computers'].query();
 console.log(computers); //outputs the computers belonging to this department
 //OR
 var IT = Department.getWithChildren({'name':'IT'}, ['computers']);
@@ -100,15 +100,14 @@ console.log(IT._computers); //outputs the computers belonging to this department
 ```
 
 #### Adding Methods
-There are 3 different kinds of methods you can attach to a `$resourceX`:
-* method - Methods only attach to an instantiated `$resourceX` (so the `$resourceX` once you get it back from the database or create using new).
-* static - Statics (short for static methods) only attach to the `$resourceX` and not its instances (so Department, but not IT).
-* extend - is really just both a method and a static. The developer will need to be aware of the context on their own.
+There are 2 different kinds of methods you can attach to a `$resource_`:
+* method - Methods only attach to an instantiated `$resource_` (so the `$resource_` once you get it back from the database or create using new).
+* static - Statics (short for static methods) only attach to the `$resource_` and not its instances (so Department, but not IT).
 
 There's many ways to add methods, as shown:
 ```javascript
 //using func(name, method) syntax:
-var Department = $resourceX('departments/:id/', {'id':'@department_id'})
+var Department = $resource_('departments/:id/', {'id':'@department_id'})
   // hires a person to work at a department. "this" is the specific instance of a department
   .method('hire', function(person){
     this._employees.push(person);
@@ -117,19 +116,5 @@ var Department = $resourceX('departments/:id/', {'id':'@department_id'})
   // gets all departments whose income is above 9001 (are profitable ;) )
   .static('getProfitable', function(){
     return this.query({'income':9001});
-  })
-  // if a department is passed in, gets the income of that department,
-  // otherwise gets income of all departments
-  .extend('getIncome', function(department){
-    if(department){
-      return department.income; //in the real world, wrap this in a $q.when...
-    }
-    else{
-      return this.query().$promise.then(function(allDepartments){
-        return allDepartments.reduce(function(profits, department){
-          return profits + department.income;
-        }, 0);
-      });
-    }
-  })
+  });
 ```

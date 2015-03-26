@@ -1,6 +1,6 @@
 'use strict';
 
-describe('$resourceX', function () {
+describe('$resource_', function () {
 
   //port over tests from ngResource
   describe('$resource tests', resourceTests);
@@ -16,7 +16,7 @@ describe('$resourceX', function () {
   ///////////////////////////////////////////
   //// shared variables
   var Departments,
-    $resourceX,
+    $resource_,
     resourceXProvider,
     $httpBackend,
     mocks = {};
@@ -39,41 +39,41 @@ describe('$resourceX', function () {
 
   //module inits
   function initResourceXWithRoles() {
-    module('ngResourceX', function ($provide, $resourceXProvider) {
+    module('ngResourceX', function ($provide, $resource_Provider) {
 
       $provide.value('Roles', {
         selectedRole: {'slug': 'test-role', 'url': 'http://api.com/member/36'},
         person: {'url': 'http://api.com/member/36/'}
       });
 
-      $resourceXProvider.defaults.params['user_role'] = 'test_role';
-      $resourceXProvider.defaults.methods = {
+      $resource_Provider.defaults.params['user_role'] = 'test_role';
+      $resource_Provider.defaults.methods = {
         'testMethod': angular.noop
       };
-      $resourceXProvider.defaults.extensions = {
+      $resource_Provider.defaults.extensions = {
         'testExtension': angular.noop
       };
 
-      resourceXProvider = $resourceXProvider;
+      resourceXProvider = $resource_Provider;
 
     })
   }
 
   //resource inits
   function initDepartmentWithChild() {
-    Departments = $resourceX('departments/:id/', {'id': '@id'})
-      //.relate('employees', $resourceX('people/:id/', {'id': '@id', 'department': '^id'}));
+    Departments = $resource_('departments/:id/', {'id': '@id'})
+      //.relate('employees', $resource_('people/:id/', {'id': '@id', 'department': '^id'}));
       .relationships({
-        'employees': $resourceX('people/:id/', {'id': '@id', 'department': '^id'}),
-        'computers': $resourceX('computers/:id/', {'id':'@id', 'department':'^id'})
+        'employees': $resource_('people/:id/', {'id': '@id', 'department': '^id'}),
+        'computers': $resource_('computers/:id/', {'id':'@id', 'department':'^id'})
       });
   }
 
   //init our globals
   function initGlobalsDefault() {
-    inject(function (_$httpBackend_, _$resourceX_, _People_, _Departments_) {
+    inject(function (_$httpBackend_, _$resource__, _People_, _Departments_) {
       $httpBackend = _$httpBackend_;
-      $resourceX = _$resourceX_;
+      $resource_ = _$resource__;
       mocks.departments = _Departments_;
       mocks.people = _People_;
     })
@@ -82,7 +82,7 @@ describe('$resourceX', function () {
   //reset our globals
   function resetGlobalsDefault() {
     Departments = null;
-    $resourceX = null;
+    $resource_ = null;
     $httpBackend = null;
     mocks = {};
   }
@@ -113,14 +113,14 @@ describe('$resourceX', function () {
     });
 
     it('new resources should have default statics', function(){
-      var R = $resourceX('test/api');
+      var R = $resource_('test/api');
       expect(R.getFull).toBeDefined();
       expect(R.relate).toBeDefined();
       expect(R.relationships).toBeDefined();
     });
 
     it('new resources should have default methods', function(){
-      var R = $resourceX('test/api');
+      var R = $resource_('test/api');
       var testR = new R();
       expect(testR.testMethod).toBeDefined();
     });
@@ -156,9 +156,9 @@ describe('$resourceX', function () {
 
     initAllDefault();
 
-    it('Can create a new relationship to a $resourceX', function () {
-      var testResourceX = $resourceX('testResource/:id', {'id':'@id'});
-      testResourceX.relate('testRelation', $resourceX('test/:testId', {'testId':'@testId'}));
+    it('Can create a new relationship to a $resource_', function () {
+      var testResourceX = $resource_('testResource/:id', {'id':'@id'});
+      testResourceX.relate('testRelation', $resource_('test/:testId', {'testId':'@testId'}));
       expect(testResourceX.$relationships['testRelation']).toBeDefined();
     });
 
@@ -173,7 +173,7 @@ describe('$resourceX', function () {
 
     it('Static methods go into the resource factory', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'})
+      Departments = $resource_('departments/:id/', {'id': '@id'})
         .static('test', function () {
           return 'rest result';
         });
@@ -186,7 +186,7 @@ describe('$resourceX', function () {
 
     it('Instance methods go into resource instance', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'})
+      Departments = $resource_('departments/:id/', {'id': '@id'})
         .method('test', function () {
           return this.id;
         });
@@ -204,7 +204,7 @@ describe('$resourceX', function () {
 
     it('Can extend with an hash of methods', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'})
+      Departments = $resource_('departments/:id/', {'id': '@id'})
         .method(
           {
             'test': function () {
@@ -222,7 +222,7 @@ describe('$resourceX', function () {
 
     it('Can extend with an Array of methods', function () {
 
-      Departments = $resourceX('departments/:id/', {'id': '@id'})
+      Departments = $resource_('departments/:id/', {'id': '@id'})
         .method([
           {
             'test': function () {
@@ -243,7 +243,7 @@ describe('$resourceX', function () {
 
     initAllDefault();
 
-    it('Can create a new $resourceX', function () {
+    it('Can create a new $resource_', function () {
       var department = new Departments;
       department.name = "Test";
       department.$save();
@@ -254,7 +254,7 @@ describe('$resourceX', function () {
 
     });
 
-    it('Can modify an instance $resourceX', function () {
+    it('Can modify an instance $resource_', function () {
 
       var department = Departments.get({'id': '2'});
       $httpBackend.expectGET(/departments\/2/).respond(200).respond(mocks.departments[1]);
@@ -268,7 +268,7 @@ describe('$resourceX', function () {
       expect(department.name).toBe('Patchy');
     });
 
-    it('Can get list of $resourceX instances using query', function () {
+    it('Can get list of $resource_ instances using query', function () {
       var departments = Departments.query();
       $httpBackend.expectGET(/departments/).respond(mocks.departments);
       $httpBackend.flush();
@@ -276,7 +276,7 @@ describe('$resourceX', function () {
       expect(departments[0].url).toBe("http://api.com/departments/1");
     });
 
-    it('Each fetched $resourceX result is an instance of $resourceX', function () {
+    it('Each fetched $resource_ result is an instance of $resource_', function () {
       var departments = Departments.query();
       $httpBackend.expectGET(/departments/).respond(mocks.departments);
       $httpBackend.flush();
@@ -284,22 +284,20 @@ describe('$resourceX', function () {
       expect(departments[0]).toBeDefined();
     });
 
-    it('Can get a single instance of $resourceX using GET', function () {
+    it('Can get a single instance of $resource_ using GET', function () {
       var departments = Departments.get({'id': '2'});
       $httpBackend.expectGET(/departments\/2/).respond(mocks.departments[1]);
       $httpBackend.flush();
       expect(departments.url).toBe("http://api.com/departments/2");
     });
 
-    it('Catch invalid paramater', function () {
-      Departments.relate('bad', $resourceX('bad/:id/', {'id':'^'}));
+    it('Catch invalid parameter', function () {
+      Departments.relate('bad', $resource_('bad/:id/', {'id':'^'}));
       var departments = Departments.query();
       $httpBackend.expectGET(/departments/).respond(mocks.departments);
       $httpBackend.flush();
-      spyOn(departments[0].$relationships['bad'], 'query').andCallThrough();
-      expect(departments[0].$relationships['bad'].query()).toThrowError();
       $httpBackend.expectGET(/bad/).respond(mocks.departments);
-      $httpBackend.flush();
+      expect( function(){ departments[0].$relationships['bad'].query() } ).toThrow(new Error("Dotted member path is invalid."));
     });
   }
 

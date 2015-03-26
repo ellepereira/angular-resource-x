@@ -4,7 +4,7 @@
 
   angular
     .module('ngResourceX', ['ngResource'])
-    .provider('$resourceX', $resourceX);
+    .provider('$resource_', $resource_);
 
   var forEach = angular.forEach,
     extend = angular.extend,
@@ -18,7 +18,7 @@
    * Adds extensibility and related resources to the Angular $resource module.
    * @class
    */
-  function $resourceX() {
+  function $resource_() {
 
     var provider = this;
     provider.$get = $get;
@@ -169,7 +169,7 @@
      * @param resource {Object}
      * @public
      * @static
-     * @returns {$resourceX.relate}
+     * @returns {$resource_.relate}
      */
     function relate(name, resource) {
       this.$relationships[name] = resource;
@@ -296,9 +296,9 @@
     }
 
     /**
-     * Attaches related $resourceXs to this instantiated $resourceX.
+     * Attaches related $resource_s to this instantiated $resource_.
      * @param entry {*}
-     * @param relationships {Object} hash of related $resourceXs to be added to this $resourceX
+     * @param relationships {Object} hash of related $resource_s to be added to this $resource_
      * @private
      */
     function attachRelations(entry, relationships) {

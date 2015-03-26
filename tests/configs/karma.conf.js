@@ -2,7 +2,7 @@ module.exports = function(config) {
 
   config.set({
     frameworks: ['jasmine'],
-    basePath: '../.',
+    basePath: '../../',
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
@@ -11,18 +11,16 @@ module.exports = function(config) {
       'tests/**/*.js'
     ],
     exclude: [],
+    'colors': true,
     port: 8080,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    reporters: ['progress','coverage'],
+    reporters: ['coverage','progress'],
     preprocessors: {
-      "src/**/*.js": "coverage"
+      'src/*.js': ['coverage']
     },
     coverageReporter: {
-      type: "lcov",
-      dir: "tests/coverage/"
+      type: "html",
+      dir: 'tests/coverage/'
     },
-    browsers: ['PhantomJS'],
-    singleRun: false
+    browsers: ['PhantomJS']
   });
 };

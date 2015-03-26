@@ -1,159 +1,135 @@
-# Angular ResourceGenerator
-AngularJS Resource Extension
+# `$resourceX` (ng-resource-x)
 
-## About
-Resource Generator wraps a call to $resource and provides some extra functionality. The provider can be configured with a base API URL, default parameters, extenders, methods and statics.
+## Get All You Need out of $resource!
 
-While $resource is amazing in itself, we wanted to provide a more declarative approach to $resource management. Typically if you wanted more functions out of your resources, you'd have to create a service that instantiated a resource and then managed the resource with methods on that service. Resource Generator creates one stop call for both your $resource and its management.
-
-Here's how your resource definition might look like:
+How do you use $resourceX? Well, you can use it exactly the same as plain $resource.
 ```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
-  {
-    'name': 'owners',
-    'url': 'owners/:id/',
-    'params': {'id':'@id'},
-    'link': {'car_id', 'id'}
-  }
-])
-  .method('paint', function(color){
-    this.color = color;
-    return this.$save();
-  }
-  .method('turnOn', function(){
-    this.on = true;
-  });
-  
-var camaro = new Cars();
-camaro.paint('yellow');
+var departments = $resourceX('departments/:id/', {'id':'@id'});
 ```
 
-### Configuration
-The ResourceGenerator provider takes in 4 arguments:
-- `url`: the URL to get this resource from.
-- `paramDefaults`: the hash of parameter defaults for this resource, exactly like $resource. Will also take a function that returns an object.
-- `children`: child endpoints. Configured like so:
-```javascript
-  {
-    //A name for your child endpoint.
-    'name': 'owners', 
-    //URL for this endpoint.
-    'url': 'carowners/{id}', 
-    //Exactly like the parent, will take an object or a function that returns an object.
-    'params': {'id':'@id'}, 
-    //Object that has as a key a query field on this child and as a value a variable name to fetch from its parent.
-    'link': {'car_id', 'id'} 
-  }
-```
+However the resource extension (`$resourceX`) service wraps angular's `$resource` service to provide the following utilities:
+* **[Relationships](#resource-relationships)**: resources _always_ have relationships, $resource should be aware of them!
+* **[Methods](#adding-methods)**: No more creating a separate service to manage your $resource's business logic and validation!
+* **[One Call, Get All](#using-nested-resources)**: Don't pollute your ui-router resolve with 4 different calls to build one object, get all the relationships at once!
 
 ## Usage
-To simply create a standard $resource just call ResourceGenerator with only the first 2 parameters:
 ```javascript
-//creates a Cars resource and binds the "id" query field to the object's id
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'});
-```
-As you can expect, a $resource is returned pointing to the cars endpoint and matches the id url query field with the object's id.
+//In this example, we have a Department resource which has employees as a sub-resource.
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
+    //related resource
+    .child('employees', $resourceX('people/:id/', {id:'@id', department:'^department_id'});
+    //instance methods
+    .method('hire', hireMethod)
+    //static methods
+    .static('getManagers', getManagersMethod);
 
-Children endpoints are automatically added to the instance of the parent's resource. Like so:
-```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
-  {
-    'name': 'owners',
-    'url': 'owners/:id/',
-    'params': {'id':'@id'},
-    'link': {'car_id', 'id'}
-  }
-]);
-
-//now when we get an instance of Car we also get some helper variables:
-var prius = Cars.get({'id':1});
-var priusOwners;
-
-//we wait for the car to be fetched
-prius.$promise.then(function(){
-  //$owners automatically get added to prius with their "car_id" query param set to the prius' id.
-  priusOwners = prius.$owners.query();
-});
-```
-
-### Methods
-Methods allow the manipulation of resource instantiated with your resource-generator. Example:
-```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}).method('paint', function(color){
-  this.color = color;
-  return this.$save();
+/////////
+// methods allow you to be more declarative to users of your service. They don't 
+// need to know details of the data model, they can just descriptive methods 
+// like: hire(person).
+function hireMethod(person, job){ 
+  this._employees.push(person);
+  person.department = this.department_id;
+  person.jobTitle = job;
+  return person.$save();
 }
 
-//then anywhere you want to use the Cars
-var prius = new Cars();
-prius.paint('blue');
-```
-
-### Statics
-Statics (static methods) however, work in the non-instantiated ResourceGenerator, like so:
-```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}).static('getAllRedCars', function(){
-  return this.query({color:'red'});
+function getManagersMethod(){
+  return this.get({'jobTitle':'manager'});
 }
-
-//now to get that list of red cars you call
-var redCars = Cars.getAllRedCars();
 ```
+Now that you've declared Departments and Employees, you can use them like so:
 
-### Extends
-Extends are simply _both_ a method and a static - as in they work on both instantiated and non-instantiated versions of your resource object.
 ```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}).extend('toggleIgnition', function(car){
-  var useCar = (this.id) ? this : car;
-  //toggle between on/off
-  useCar.on = !useCar.on;
-  
-  return useCar.$save();
-}
+//by default, getWithChildren will get all children
+var Sales = Department.getWithChildren({'name':'Sales'}); 
+//the above sends out 2 requests: GET /departments?name=Sales and GET /people?department_id=1
+Sales.$promise.then(example);
 
-//now we can use that method with an instantiated Car
-var prius = new Cars({'name':'prius'});
-//turn car on
-prius.toggleIgnition();
-//and turn it back off, using the non-instantiated Cars
-Cars.toggleIgnition(prius);
-```
-
-### Other Helper Stuff
-
-#### Function Params
-You can use a function in place of default params that returns the params. This function is $injected but only when called, so it's safe to set up during the config phase of your app. Like so:
-```javascript
-//modifying the default params in this case, but this works for any time you pass in a parameters list
-//In this example, I want to attach a user's login role to all calls made from my resources.
-ResourceGeneratorProvider.defaults.params = function(RolesService){
-  if(RolesService.myRole){
-    return {'user_role': RolesService.myRole};
-  }
+function example(){
+  //by default we prefix children results with a '_' but it's configurable/removable
+  Sales._people.hire(new Person({'name': 'Joey', 'jobTitle':'manager'}));
+  //will output 'Joey says Hello!'
+  console.log(Sales._people[0].name + ' says Hello!'); 
 }
 ```
 
-#### GetWithChildren()
-GetWithChildren() is a default method for all ResourceGenerators. It will parallel load all of the resource's childrens and save their result to the resource. Like so:
+You don't have to use .getWithChildren at all, all children are just added as an array to the `$resourceX` as well:
 ```javascript
-var Cars = ResourceGenerator('cars/:id/', {'id':'@id'}, [
-  {
-    'name': 'owners',
-    'url': 'owners/:id/',
-    'params': {'id':'@id'},
-    'link': {'car_id', 'id'}
-  }
-]);
+//Say we want to get all the female workers who work in accounting
+var Accounting = Department.get({'name':'Accounting'});
+var Accounting.$promise.then(example);
 
-var prius = Cars.getWithChildren({'id':5});
-var priusOwners;
-
-prius.$promise.then(function(){
-  priusOwners = prius._owners;
-});
+function example(){
+  var Accountants = Accounting.$children['employees'];
+  var FemaleAccountants = Accountants.query({'sex': 'female'});
+  //the above request will look like: GET /people?department_id=2&sex=female
+  //the department_id is inferred from the parent
+}
 ```
 
+### Creating a `$resourceX`
+`$resourceX` takes the same arguments to create a resource as `$resource`. Any resource you can create with $resource can be created with `$resourceX`.
 
-  
-    
-    
+#### Resource Relationships
+The `^` as the first character in a param map stands in place of a `@` letting `$resourceX` know to look for this parameter on its `$parent` property. You can go all sorts of crazy with '^' as they DO work through multiple levels (`^^^id` would get the ID of an object 3 levels above this one). Alternatively you can simply use the $parent variable like you would in a plain $resource call:
+```javascript
+var People = $resourceX('people/:id/', {id:'@id', department:'@$parent.department_id'})
+```
+Either way, the People resource will look for a parent containing the department_id value and pass it on to all its calls. This way when its created through a parent department, all subsequent calls to People will attempt to filter by department_id.
+
+#### Using Nested Resources
+You can then nest the declared resource using the `child(name, function)` method. The method can also take in all children at once if you pass in an object, like so:
+```javascript
+//declare both employees and computers nested $resourceXs
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
+    .child({
+      'employees': $resourceX('people/:id/', {'id':'@id', 'department':'^department_id'}),
+      'computers': $resourceX('computers/:id/', {'id':'@comp_id', 'department':'^department_id'})
+    });
+```
+Once nested, resources can be accessed through the `$children` property on the parent or may automatically be loaded using the `getWithChildren(params, children)` method.
+```javascript
+//... skipping the promises part for these examples
+var IT = Department.get({'name':'IT'});
+var computers = IT.$children['computers'].query();
+console.log(computers); //outputs the computers belonging to this department
+//OR
+var IT = Department.getWithChildren({'name':'IT'}, ['computers']);
+console.log(IT._computers); //outputs the computers belonging to this department
+```
+
+#### Adding Methods
+There are 3 different kinds of methods you can attach to a `$resourceX`:
+* method - Methods only attach to an instantiated `$resourceX` (so the `$resourceX` once you get it back from the database or create using new).
+* static - Statics (short for static methods) only attach to the `$resourceX` and not its instances (so Department, but not IT).
+* extend - is really just both a method and a static. The developer will need to be aware of the context on their own.
+
+There's many ways to add methods, as shown:
+```javascript
+//using func(name, method) syntax:
+var Department = $resourceX('departments/:id/', {'id':'@department_id'})
+  // hires a person to work at a department. "this" is the specific instance of a department
+  .method('hire', function(person){
+    this._employees.push(person);
+    return this.$save();
+  })
+  // gets all departments whose income is above 9001 (are profitable ;) )
+  .static('getProfitable', function(){
+    return this.query({'income':9001});
+  })
+  // if a department is passed in, gets the income of that department,
+  // otherwise gets income of all departments
+  .extend('getIncome', function(department){
+    if(department){
+      return department.income; //in the real world, wrap this in a $q.when...
+    }
+    else{
+      return this.query().$promise.then(function(allDepartments){
+        return allDepartments.reduce(function(profits, department){
+          return profits + department.income;
+        }, 0);
+      });
+    }
+  })
+```

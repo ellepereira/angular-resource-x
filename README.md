@@ -106,7 +106,7 @@ There are 2 different kinds of methods you can attach to a `$resource_`:
 * method - Methods only attach to an instantiated `$resource_` (so the `$resource_` once you get it back from the database or create using new).
 * static - Statics (short for static methods) only attach to the `$resource_` and not its instances (so Department, but not IT).
 
-There's many ways to add methods, as shown:
+There's multiple ways to add methods:
 ```javascript
 //using func(name, method) syntax:
 var Department = $resource_('departments/:id/', {'id':'@department_id'})
@@ -119,4 +119,26 @@ var Department = $resource_('departments/:id/', {'id':'@department_id'})
   .static('getProfitable', function(){
     return this.query({'income':9001});
   });
+  
+//using func(obj) syntax:
+var methods = 
+{ 
+    'hire': function(person) {
+        this._employees.push(person);
+        return this.$save(); 
+    },
+    'addProfit': function(amount) {
+        this.profits+=amount;
+        return this.$save(); 
+    }
+}
+
+var statics = 
+{ 
+    'getProfitable': function(person) {
+        return this.query({'income':9001});
+    },
+}
+
+var Department = $resource_('departments/:id/', {'id':'@department_id'}).method(methods)
 ```

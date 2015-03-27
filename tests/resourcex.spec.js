@@ -34,7 +34,7 @@ describe('$resource_', function () {
     beforeEach(initResourceXWithRoles);
     beforeEach(initGlobalsDefault);
     beforeEach(initDepartmentWithChild);
-    afterAll(resetGlobalsDefault);
+    //afterAll(resetGlobalsDefault);
   }
 
   //module inits

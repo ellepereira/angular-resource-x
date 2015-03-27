@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/resource_.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">src/resource_.js</span></h1>
+    <h2>
+        Statements: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">85.29% <small>(29 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(30 / 30)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; resource_.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">132</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">69</span>
+<span class="cline-any cline-yes">69</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">199</span>
+<span class="cline-any cline-yes">199</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">268</span>
+<span class="cline-any cline-yes">266</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">330</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">330</span>
+<span class="cline-any cline-yes">31</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">31</span>
+<span class="cline-any cline-yes">16</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">31</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">46</span>
+<span class="cline-any cline-yes">46</span>
+<span class="cline-any cline-yes">46</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">168</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function (angular) {
+&nbsp;
+  'use strict';
+&nbsp;
+  angular
+    .module('ngResourceX', ['ngResource'])
+    .provider('$resource_', $resource_);
+&nbsp;
+  var forEach = angular.forEach,
+    extend = angular.extend,
+    copy = angular.copy,
+    isObject = angular.isObject,
+    isString = angular.isString,
+    isArray = angular.isArray;
+&nbsp;
+  /**
+   * $resource utilities extension.
+   * Adds extensibility and related resources to the Angular $resource module.
+   * @class
+   */
+  function $resource_() {
+&nbsp;
+    var provider = this;
+    provider.$get = $get;
+&nbsp;
+    //defaults holds all the configs
+    provider.defaults = {
+      'baseUrl': null,
+      'relationPrefix': '_',
+      'methods': {
+        //'relationships': relationships
+      },
+      'statics': {
+        'relate': relate,
+        //'getFull': getFull,
+        'relationships': relationships
+      },
+      'params': {},
+      'actions': {
+        'update': {
+          'method': 'PATCH'
+        },
+        'get': {
+          'method': 'GET'
+        },
+        'query': {
+          'isArray': true,
+          'method': 'GET'
+        },
+        'save': {
+          'method': 'POST'
+        },
+        'options': {
+          'method': 'OPTIONS'
+        }
+      }
+    };
+&nbsp;
+    $get.$inject = ['$resource', '$q'];
+    /**
+     * Provider $get function that returns the resource factory function.
+     * @param $resource
+     * @param $q
+     * @returns {resourceFactory}
+     */
+    function $get($resource, $q) {
+&nbsp;
+      /**
+       * Wrapper for $resource. Creates a $resource and adds default methods/statics
+       * @param url {string} URL of this $resource
+       * @param params {Object} hash of parameters, same as $resource but modified to support ^ to map to parent properties.
+       * @param actions {Object} hash of actions, see $resource documentation
+       * @param options {Object} hash of options, see $resource documentation
+       * @public
+       * @returns {Object} $resource
+       */
+      function resourceFactory(url, params, actions, options) {
+&nbsp;
+        var resource,
+          resParams = extend({}, provider.defaults.params, params),
+          resActions = extend({}, provider.defaults.actions, actions);
+&nbsp;
+        url = (provider.defaults.baseUrl || '') + url;
+&nbsp;
+        resource = $resource(url, resParams, resActions, options);
+&nbsp;
+        //Exposed methods
+        resource.method = method;
+        resource.static = staticMethod;
+&nbsp;
+        init();
+&nbsp;
+        return resource;
+&nbsp;
+        ////////////////////////////////////////////////////////////
+&nbsp;
+        function init() {
+&nbsp;
+          //resolve our ^ parameters
+          resolveParentParams(resParams, resource);
+          addResponseTransformers(resActions, resource);
+&nbsp;
+          //add default methods/statics
+          forEach(provider.defaults.methods, function (func, key) {
+            resource.method(key, func);
+          });
+          forEach(provider.defaults.statics, function (func, key) {
+            resource.static(key, func);
+          });
+&nbsp;
+          resource.static('getFull', getFull);
+          resource.$relationships = {};
+        }
+&nbsp;
+        /**
+         * Does a GET but also resolves sub-resources
+         * @param getParams {Object} standard $http GET params
+         * @param relatedResourcesNames {string[]} names of the related resources to query for
+         * @public
+         * @instance
+         */
+        function getFull(getParams, relatedResourcesNames) {
+&nbsp;
+          var deferred = $q.defer(),
+            prefix = provider.defaults.relationPrefix,
+            placeholder = extend(new this(), {
+              '$promise': deferred.promise,
+              '$ready': false
+            });
+&nbsp;
+          <span class="missing-if-branch" title="else path not taken" >E</span>if(!relatedResourcesNames){
+            relatedResourcesNames = Object.keys(resource.$relationships);
+          }
+&nbsp;
+          deferred.promise = this.get(getParams).$promise.then(gotParentResults);
+&nbsp;
+          function gotParentResults(resource) {
+&nbsp;
+            //if this $resource has related resources
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (resource.$relationships) {
+&nbsp;
+              //go through the related resources we were asked to grab
+              $q.all(forEach(relatedResourcesNames, function (name) {
+&nbsp;
+                //run their queries and assign the prefixed results to the parent
+                return resource.$relationships[name].query().$promise
+                  .then(function gotRelatedResults(relatedResults) {
+                    resource[prefix + name] = relatedResults;
+                    return resource;
+                  });
+              }));
+            }
+&nbsp;
+          }
+&nbsp;
+          return placeholder;
+        }
+      }
+&nbsp;
+      return resourceFactory;
+    }
+&nbsp;
+    // DEFAULT EXTENSIONS
+    ////////////////////////////////////////////////////////////
+&nbsp;
+    /**
+     * Adds a sub-resource to this $resource
+     * @param name {string}
+     * @param resource {Object}
+     * @public
+     * @static
+     * @returns {$resource_.relate}
+     */
+    function relate(name, resource) {
+      this.$relationships[name] = resource;
+      return this;
+    }
+&nbsp;
+    /**
+     * Sets/Gets related resources
+     * @param [relationships] {Object} hash of related resource factories
+     * @public
+     * @static
+     * @return {*}
+     */
+    function relationships(relationships){
+      this.$relationships = relationships;
+      return this;
+    }
+&nbsp;
+    // EXTENDER METHODS
+    ////////////////////////////////////////////////////////////
+&nbsp;
+    /**
+     * Adds a Method to this $resource. Methods operate on instantiated objects from your $resource.
+     * @param arg1 {string|Object|Object[]} A key-value pair containing method name and definition OR an array of
+     * key value pairs OR the method name (definition on the next param)
+     * @param [func] {Function} if the first parameter is a string of the method name, this parameter will be used as
+     * the definition
+     * @public
+     * @returns {_resource.method}
+     */
+    function method(arg1, func) {
+      extender(this.prototype, arg1, func);
+      return this;
+    }
+&nbsp;
+    /**
+     * Adds a "static" method to this $resource. Statics operate on the non-instantiated version of your $resource
+     * @param arg1 {string|Object|Object[]} A key-value pair containing method name and definition OR an array of
+     * key value pairs OR the method name (definition on the next param)
+     * @param [func] {Function} if the first parameter is a string of the method name, this parameter will be used as
+     * the definition
+     * @public
+     * @returns {*}
+     */
+    function staticMethod(arg1, func) {
+      extender(this, arg1, func);
+      return this;
+    }
+&nbsp;
+&nbsp;
+    // PRIVATES
+    ////////////////////////////////////////////////////////////
+&nbsp;
+    /**
+     * Helper function that extends a provided object with method arrays, hash or string/method value.
+     * @param src Object to be extended
+     * @param arg1 {string|Object|Object[]} A key-value pair containing method name and definition OR an array of
+     * key value pairs OR the method name (definition on the next param)
+     * @param [func] {Function} if @arg1 is a string of the method name, this parameter will be used as
+     * the definition
+     * @private
+     */
+    function extender(src, arg1, func) {
+      if (isString(arg1)) {
+        src[arg1] = func;
+      }
+      else if (isArray(arg1)) {
+        forEach(arg1, function (method) {
+          extend(src, method);
+        });
+      }
+      else <span class="missing-if-branch" title="else path not taken" >E</span>if (isObject(arg1)) {
+        extend(src, arg1);
+      }
+    }
+&nbsp;
+    /**
+     * Special response transformer that first runs the user defined transformer and then our own to attach
+     * our related resources.
+     * @param actions {Object} actions hash to have response transformers added.
+     * @param resource {Object}
+     * @private
+     * @returns {Object} actions hash with added response transformers.
+     */
+    function addResponseTransformers(actions, resource) {
+      forEach(actions, function (action) {
+        action.transformResponse = responseTransforms(action.transformResponse, resource);
+      });
+&nbsp;
+      return actions;
+    }
+&nbsp;
+    /**
+     * Response transformer that first calls the user defined transform and then applies our own (which adds the
+     * $relationships)
+     * @param otherTransform {Function}
+     * @param resource {Object}
+     * @private
+     * @returns {Function}
+     */
+    function responseTransforms(otherTransform, parentResource) {
+&nbsp;
+      return function transformResponse(response) {
+        if (otherTransform) {
+          response = otherTransform(response);
+        }
+        else {
+          response = (response ? angular.fromJson(response) : <span class="branch-1 cbranch-no" title="branch not covered" >{})</span>;
+        }
+&nbsp;
+        if (isArray(response)) {
+          forEach(response, function (entry) {
+&nbsp;
+            attachRelations(entry, parentResource.$relationships);
+          })
+        }
+        else {
+          attachRelations(response, parentResource.$relationships);
+        }
+&nbsp;
+        return response;
+      };
+&nbsp;
+    }
+&nbsp;
+    /**
+     * Attaches related $resource_s to this instantiated $resource_.
+     * @param entry {*}
+     * @param relationships {Object} hash of related $resource_s to be added to this $resource_
+     * @private
+     */
+    function attachRelations(entry, relationships) {
+&nbsp;
+      if (!entry.$relationships) {
+        entry.$relationships = {};
+      }
+&nbsp;
+      forEach(relationships, function (relatedResource, name) {
+        var myResource = copy(relatedResource);
+        myResource.prototype.$parent = entry;
+        entry.$relationships[name] = myResource;
+      });
+&nbsp;
+    }
+&nbsp;
+    /**
+     * Finds parameters that need to map to a parent $resource and attaches a function that will fetch the parent's
+     * value for that param.
+     * @param params {Object}
+     * @param resource {Object}
+     * @private
+     * @returns {Object}
+     */
+    function resolveParentParams(params, resource) {
+      forEach(params, function (param, key) {
+        if (param.charAt &amp;&amp; param.charAt(0) == '^') {
+          params[key] = parentParamFunc(resource, param.substr(1));
+        }
+      });
+&nbsp;
+      return params;
+    }
+&nbsp;
+    /**
+     * Function is run every time our $resource is used and attempts to fetch the value for our $parent if one of our
+     * parameters requires so.
+     * @param obj
+     * @param param
+     * @private
+     * @returns {Function}
+     */
+    function parentParamFunc(obj, param) {
+      return function () {
+        return lookupDottedPath(obj.prototype.$parent, param);
+      };
+    }
+&nbsp;
+&nbsp;
+    //FROM ANGULAR 1.3
+    ////////////////////////////////////////////////////////////
+    var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
+&nbsp;
+    function isValidDottedPath(path) {
+&nbsp;
+      return (path != null &amp;&amp; path !== '' &amp;&amp; path !== 'hasOwnProperty' &amp;&amp;
+      MEMBER_NAME_REGEX.test('.' + path));
+    }
+&nbsp;
+    function lookupDottedPath(obj, path) {
+      if (!isValidDottedPath(path)) {
+        throw new Error('Dotted member path is invalid.', path);
+      }
+&nbsp;
+      var keys = path.split('.');
+      for (var i = 0, ii = keys.length; i &lt; ii &amp;&amp; obj !== undefined; i++) {
+        var key = keys[i];
+        obj = (obj !== null) ? obj[key] : <span class="branch-1 cbranch-no" title="branch not covered" >undefined;</span>
+      }
+      return obj;
+    }
+&nbsp;
+  }
+&nbsp;
+&nbsp;
+})(angular);
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Mar 26 2015 21:17:51 GMT-0400 (EDT)</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

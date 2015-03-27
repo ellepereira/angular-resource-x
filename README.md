@@ -140,5 +140,5 @@ var statics =
     },
 }
 
-var Department = $resource_('departments/:id/', {'id':'@department_id'}).method(methods)
+var Department = $resource_('departments/:id/', {'id':'@department_id'}).method(methods).statics(statics);
 ```

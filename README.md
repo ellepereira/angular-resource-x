@@ -42,7 +42,7 @@ Now that you've declared Departments and Employees, you can use them like so:
 
 ```javascript
 //by default, getFull will get all related resources
-var Sales = Department.getWithChildren({'name':'Sales'}); 
+var Sales = Department.getFull({'name':'Sales'}); 
 //the above sends out 2 requests: GET /departments?name=Sales and GET /people?department_id=1
 Sales.$promise.then(example);
 
@@ -95,7 +95,7 @@ var IT = Department.get({'name':'IT'});
 var computers = IT.$relationships['computers'].query();
 console.log(computers); //outputs the computers belonging to this department
 //OR
-var IT = Department.getWithChildren({'name':'IT'}, ['computers']);
+var IT = Department.getFull({'name':'IT'}, ['computers']);
 console.log(IT._computers); //outputs the computers belonging to this department
 ```
 

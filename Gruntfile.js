@@ -24,7 +24,7 @@ module.exports = function (grunt) {
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       js: {
-        files: ['<%= resourceX.app %>/components/**/*.js'],
+        files: ['<%= resourceX.app %>/**/*.js'],
         tasks: ['newer:jshint:all']
       },
       gruntfile: {
@@ -75,10 +75,10 @@ module.exports = function (grunt) {
       my_target: {
         options: {
           sourceMap: true,
-          sourceMapName: 'dist/resource_.map'
+          sourceMapName: 'dist/angular-resource-x.map'
         },
         files: {
-          'dist/resource_.min.js': ['src/resource_.js']
+          'dist/resource_.min.js': ['src/angular-resource-x.js']
         }
       }
     },
@@ -104,7 +104,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: 'dist/',
           src: 'resource_.js',
-          dest: 'dist/resource_.js'
+          dest: 'dist/angular-resource-x.js'
         }]
       }
     },

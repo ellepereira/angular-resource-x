@@ -1,6 +1,6 @@
 # `$resource_` (ng-resource-x)
 
-[![Join the chat at https://gitter.im/luciano7/ng-resource-x](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luciano7/ng-resource-x?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)[![Build Status](https://travis-ci.org/luciano7/ng-resource-x.svg)](https://travis-ci.org/luciano7/ng-resource-x)
+[![Join the chat at https://gitter.im/luciano7/ng-resource-x](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luciano7/ng-resource-x?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/luciano7/ng-resource-x.svg)](https://travis-ci.org/luciano7/ng-resource-x)
 
 ## Get All You Need out of $resource!
 

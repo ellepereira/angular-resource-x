@@ -1,5 +1,7 @@
 # `$resource_` (ng-resource-x)
 
+[![Join the chat at https://gitter.im/luciano7/ng-resource-x](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luciano7/ng-resource-x?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Get All You Need out of $resource!
 
 How do you use $resource_? Well, you can use it exactly the same as plain $resource.

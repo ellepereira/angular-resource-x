@@ -77,8 +77,8 @@
       function resourceFactory(url, params, actions, options) {
 
         var resource,
-          resParams = extend({}, provider.defaults.params, params),
-          resActions = extend({}, provider.defaults.actions, actions);
+          resParams = extend({}, copy(provider.defaults.params), params),
+          resActions = extend({}, copy(provider.defaults.actions), actions);
 
         url = (provider.defaults.baseUrl || '') + url;
 

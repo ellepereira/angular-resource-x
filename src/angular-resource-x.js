@@ -6,12 +6,12 @@
     .module('ngResourceX', ['ngResource'])
     .provider('$resource_', $resource_);
 
-  var forEach = angular.forEach,
-    extend = angular.extend,
-    copy = angular.copy,
-    isObject = angular.isObject,
-    isString = angular.isString,
-    isArray = angular.isArray;
+  var forEach  = angular.forEach,
+      extend   = angular.extend,
+      copy     = angular.copy,
+      isObject = angular.isObject,
+      isString = angular.isString,
+      isArray  = angular.isArray;
 
   /**
    * $resource utilities extension.
@@ -77,8 +77,8 @@
       function resourceFactory(url, params, actions, options) {
 
         var resource,
-          resParams = extend({}, copy(provider.defaults.params), params),
-          resActions = extend({}, copy(provider.defaults.actions), actions);
+            resParams  = extend({}, copy(provider.defaults.params), params),
+            resActions = extend({}, copy(provider.defaults.actions), actions);
 
         url = (provider.defaults.baseUrl || '') + url;
 
@@ -121,14 +121,14 @@
          */
         function getFull(getParams, relatedResourcesNames) {
 
-          var deferred = $q.defer(),
-            prefix = provider.defaults.relationPrefix,
-            placeholder = extend(new this(), {
-              '$promise': deferred.promise,
-              '$ready': false
-            });
+          var deferred    = $q.defer(),
+              prefix      = provider.defaults.relationPrefix,
+              placeholder = extend(new this(), {
+                '$promise': deferred.promise,
+                '$ready': false
+              });
 
-          if(!relatedResourcesNames){
+          if (!relatedResourcesNames) {
             relatedResourcesNames = Object.keys(resource.$relationships);
           }
 
@@ -183,7 +183,7 @@
      * @static
      * @return {*}
      */
-    function relationships(relationships){
+    function relationships(relationships) {
       this.$relationships = relationships;
       return this;
     }
@@ -282,7 +282,6 @@
 
         if (isArray(response)) {
           forEach(response, function (entry) {
-
             attachRelations(entry, parentResource.$relationships);
           })
         }
@@ -308,9 +307,11 @@
       }
 
       forEach(relationships, function (relatedResource, name) {
-        var myResource = copy(relatedResource);
-        myResource.prototype.$parent = entry;
-        entry.$relationships[name] = myResource;
+        var params = {};
+        forEach(relatedResource.$$parentMap, function (map, key) {
+          params[key] = lookupDottedPath(entry, map);
+        });
+        entry.$relationships[name] = relatedResource.bind(params);
       });
 
     }
@@ -324,27 +325,19 @@
      * @returns {Object}
      */
     function resolveParentParams(params, resource) {
+
+      var ret = {};
+      resource.$$parentMap = {};
+
       forEach(params, function (param, key) {
         if (param.charAt && param.charAt(0) == '^') {
-          params[key] = parentParamFunc(resource, param.substr(1));
+          resource.$$parentMap[key] = param.substr(1);
         }
+        ret[key] = param;
       });
 
+      params = ret;
       return params;
-    }
-
-    /**
-     * Function is run every time our $resource is used and attempts to fetch the value for our $parent if one of our
-     * parameters requires so.
-     * @param obj
-     * @param param
-     * @private
-     * @returns {Function}
-     */
-    function parentParamFunc(obj, param) {
-      return function () {
-        return lookupDottedPath(obj.prototype.$parent, param);
-      };
     }
 
 

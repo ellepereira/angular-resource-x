@@ -295,9 +295,8 @@ describe('$resource_', function () {
       Departments.relate('bad', $resource_('bad/:id/', {'id':'^'}));
       var departments = Departments.query();
       $httpBackend.expectGET(/departments/).respond(mocks.departments);
-      $httpBackend.flush();
       $httpBackend.expectGET(/bad/).respond(mocks.departments);
-      expect( function(){ departments[0].$relationships['bad'].query() } ).toThrow(new Error("Dotted member path is invalid."));
+      expect( function(){ $httpBackend.flush() } ).toThrow(new Error("Dotted member path is invalid."));
     });
   }
 

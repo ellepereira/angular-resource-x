@@ -330,7 +330,7 @@
       resource.$$parentMap = {};
 
       forEach(params, function (param, key) {
-        if (param.charAt && param.charAt(0) == '^') {
+        if (param && param.charAt && param.charAt(0) == '^') {
           resource.$$parentMap[key] = param.substr(1);
         }
         ret[key] = param;

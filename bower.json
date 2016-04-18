@@ -4,7 +4,8 @@
   "homepage": "https://github.com/luciano7/angular-resource-x",
   "authors": [
     "Luciano Pereira <hello+world@luciano.io>",
-    "Dayan Moreno"
+    "Dayan Moreno",
+    "Mike Grischenko"
   ],
   "description": "Angular Resource Extension",
   "main": "src/angular-resource-x.js",

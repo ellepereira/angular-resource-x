@@ -283,9 +283,9 @@
         if (isArray(response)) {
           forEach(response, function (entry) {
             attachRelations(entry, parentResource.$relationships);
-          })
+          });
         }
-        else {
+        else if (isObject(response)) {
           attachRelations(response, parentResource.$relationships);
         }
 

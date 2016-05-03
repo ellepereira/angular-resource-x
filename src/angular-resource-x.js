@@ -1,4 +1,4 @@
-(function (angular) {
+(function(angular) {
 
   'use strict';
 
@@ -25,33 +25,29 @@
 
     //defaults holds all the configs
     provider.defaults = {
-      'baseUrl': null,
-      'relationPrefix': '_',
-      'methods': {
-        //'relationships': relationships
+      baseUrl:        null,
+      relationPrefix: '_',
+      statics:        {
+        relate:        relate,
+        relationships: relationships
       },
-      'statics': {
-        'relate': relate,
-        //'getFull': getFull,
-        'relationships': relationships
-      },
-      'params': {},
-      'actions': {
-        'update': {
-          'method': 'PATCH'
+      params:         {},
+      actions:        {
+        update:  {
+          method: 'PATCH'
         },
-        'get': {
-          'method': 'GET'
+        get:     {
+          method: 'GET'
         },
-        'query': {
-          'isArray': true,
-          'method': 'GET'
+        query:   {
+          isArray: true,
+          method:  'GET'
         },
-        'save': {
-          'method': 'POST'
+        save:    {
+          method: 'POST'
         },
-        'options': {
-          'method': 'OPTIONS'
+        options: {
+          method: 'OPTIONS'
         }
       }
     };
@@ -101,10 +97,10 @@
           addResponseTransformers(resActions, resource);
 
           //add default methods/statics
-          forEach(provider.defaults.methods, function (func, key) {
+          forEach(provider.defaults.methods, function(func, key) {
             resource.method(key, func);
           });
-          forEach(provider.defaults.statics, function (func, key) {
+          forEach(provider.defaults.statics, function(func, key) {
             resource.static(key, func);
           });
 
@@ -125,7 +121,7 @@
               prefix      = provider.defaults.relationPrefix,
               placeholder = extend(new this(), {
                 '$promise': deferred.promise,
-                '$ready': false
+                '$ready':   false
               });
 
           if (!relatedResourcesNames) {
@@ -140,7 +136,7 @@
             if (resource.$relationships) {
 
               //go through the related resources we were asked to grab
-              $q.all(forEach(relatedResourcesNames, function (name) {
+              $q.all(forEach(relatedResourcesNames, function(name) {
 
                 //run their queries and assign the prefixed results to the parent
                 return resource.$relationships[name].query().$promise
@@ -237,7 +233,7 @@
         src[arg1] = func;
       }
       else if (isArray(arg1)) {
-        forEach(arg1, function (method) {
+        forEach(arg1, function(method) {
           extend(src, method);
         });
       }
@@ -255,7 +251,7 @@
      * @returns {Object} actions hash with added response transformers.
      */
     function addResponseTransformers(actions, resource) {
-      forEach(actions, function (action) {
+      forEach(actions, function(action) {
         action.transformResponse = responseTransforms(action.transformResponse, resource);
       });
 
@@ -266,7 +262,7 @@
      * Response transformer that first calls the user defined transform and then applies our own (which adds the
      * $relationships)
      * @param otherTransform {Function}
-     * @param resource {Object}
+     * @param parentResource {Object}
      * @private
      * @returns {Function}
      */
@@ -281,7 +277,7 @@
         }
 
         if (isArray(response)) {
-          forEach(response, function (entry) {
+          forEach(response, function(entry) {
             attachRelations(entry, parentResource.$relationships);
           })
         }
@@ -302,16 +298,19 @@
      */
     function attachRelations(entry, relationships) {
 
+      var prefix = provider.defaults.relationPrefix;
+
       if (!entry.$relationships) {
         entry.$relationships = {};
       }
 
-      forEach(relationships, function (relatedResource, name) {
+      forEach(relationships, function(relatedResource, name) {
         var params = {};
-        forEach(relatedResource.$$parentMap, function (map, key) {
+        forEach(relatedResource.$$parentMap, function(map, key) {
           params[key] = lookupDottedPath(entry, map);
         });
         entry.$relationships[name] = relatedResource.bind(params);
+        entry[prefix + name] = entry.$relationships[name];
       });
 
     }
@@ -329,7 +328,7 @@
       var ret = {};
       resource.$$parentMap = {};
 
-      forEach(params, function (param, key) {
+      forEach(params, function(param, key) {
         if (param && param.charAt && param.charAt(0) == '^') {
           resource.$$parentMap[key] = param.substr(1);
         }

@@ -144,7 +144,7 @@ describe('$resource_', function () {
       var department = Departments.get({'id': '1'});
       $httpBackend.expectGET(/departments\/1/).respond(mocks.departments[0]);
       $httpBackend.flush();
-      $httpBackend.expectGET(/people\?department=1/).respond(200);
+      $httpBackend.expectGET(/people\?department=1/).respond(200, mocks.people);
       department.$relationships['employees'].query();
       $httpBackend.flush();
       expect(department.$relationships['employees']).toBeDefined();
@@ -244,10 +244,11 @@ describe('$resource_', function () {
     initAllDefault();
 
     it('Can create a new $resource_', function () {
-      var department = new Departments;
+      var department = new Departments();
+
       department.name = "Test";
       department.$save();
-      $httpBackend.expectPOST(/departments/, {name: 'Test'}).respond(200);
+      $httpBackend.expectPOST(/departments/, {name: 'Test'}).respond({name: 'Test'});
       $httpBackend.flush();
 
       expect(department.name).toBe('Test');
@@ -261,7 +262,7 @@ describe('$resource_', function () {
       $httpBackend.flush();
 
       department.name = 'Patchy';
-      $httpBackend.expectPATCH(/departments\/2/).respond(200);
+      $httpBackend.expectPATCH(/departments\/2/).respond(200, {name: 'Patchy'});
       department.$update();
       $httpBackend.flush();
 

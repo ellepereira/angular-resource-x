@@ -281,7 +281,7 @@
             attachRelations(entry, parentResource.$relationships);
           });
         }
-        else if (isObject(response)) {
+        else {
           attachRelations(response, parentResource.$relationships);
         }
 
@@ -297,6 +297,9 @@
      * @private
      */
     function attachRelations(entry, relationships) {
+      if (!isObject(entry)) {
+        return;
+      }
 
       var prefix = provider.defaults.relationPrefix;
 
